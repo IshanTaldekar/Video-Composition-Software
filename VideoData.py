@@ -65,13 +65,25 @@ class VideoData:
 
         return self.clip
 
+    def write_text(self, text, position="center", duration=10, text_color="white", start_time=0, font_size=12):
+
+        if self.clip is None:
+            print('[WARNING] clip not read.')
+
+        text_clip = (TextClip(text, fontsize=font_size, color=text_color)
+                     .set_pos(position)
+                     .set_duration(duration)
+                     .set_start(start_time))
+
+        self.clip = CompositeVideoClip([self.clip, text_clip])
+
     def write(self, clip_name='VideoDataOutput.mp4'):
 
         if self.clip is None:
             print('[VideoData ERROR] No clip available.')
             return
 
-        self.clip.write_videofile(clip_name)
+        self.clip.write_videofile(clip_name, fps=30, threads=1, codec="libx264")
 
     def close(self):
 

@@ -27,6 +27,7 @@ class AVBuilder:
 
         self.output_clip = None
         self.delay_audio_start_duration = 0
+        self.words_list = []
 
     def run(self):
 
@@ -54,6 +55,7 @@ class AVBuilder:
     def process_background(self):
 
         self.media_data['background'].loop(self.media_data['audio'].get_duration())
+        self.media_data['background'].write_text("Hello", duration=5, font_size=20)
         self.media_data['background'].set_clip(self.media_data['background'].get_clip().set_audio(self.media_data['audio'].get_clip()))
 
     def build(self):
@@ -71,12 +73,12 @@ class AVBuilder:
 
 file_dict = {
 
-    'introduction': r'C:\Users\16626\Downloads\WOW GIF.gif',
-    'background': r'C:\Users\16626\Downloads\WOW GIF.gif',
-    'transition': r'C:\Users\16626\Downloads\WOW GIF.gif',
-    'outroduction': r'C:\Users\16626\Downloads\WOW GIF.gif',
-    'audio': r'C:\Users\16626\Downloads\bensound-littleidea.mp3',
-    'output': r'C:\Users\16626\Downloads\Build1.mp4'
+    'introduction': r'/home/wasp/Pictures/giphy.gif',
+    'background': r'/home/wasp/Pictures/giphy.gif',
+    'transition': r'/home/wasp/Pictures/giphy.gif',
+    'outroduction': r'/home/wasp/Pictures/giphy.gif',
+    'audio': r'/home/wasp/Music/sample-9s.mp3',
+    'output': r'/home/wasp/Code/Video-Composition-Software/output.mp4'
 }
 
 processor = AVBuilder(file_dict)
