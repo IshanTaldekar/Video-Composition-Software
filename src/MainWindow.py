@@ -2,7 +2,8 @@ import sys
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QDialog, QApplication, QFileDialog
 from PyQt5.uic import loadUi
-from src.
+from AVBuilder import *
+from WordList import *
 
 
 class MainWindow(QDialog):
@@ -29,6 +30,13 @@ class MainWindow(QDialog):
 
         self.LoadButton.clicked.connect(self.load_files)
         self.RunButton.clicked.connect(self.run)
+
+        self.word_visibility_duration = 1
+        self.processor = None
+        self.random_words = None
+        self.random_word_count = 0
+
+        self.random_words_generator = WordList()
 
     def browse_introduction_file(self):
 
@@ -65,13 +73,57 @@ class MainWindow(QDialog):
         file_name = QFileDialog.getOpenFileName(self, 'Open File', '~/')
         return file_name[0]
 
+    def validate_input_files(self):
+
+        return self.file_dictionary['introduction'] != '' and self.file_dictionary['background'] != '' and \
+               self.file_dictionary['outroduction'] != '' and self.file_dictionary['transition'] != '' and \
+               self.file_dictionary['audio'] != ''
+
     def load_files(self):
 
-        pass
+        if not self.validate_input_files():
+
+            '''
+            TODO: Add error prompt.
+            '''
+            pass
+
+        else:
+
+            self.processor = AVBuilder(self.file_dictionary)
+            audio_duration = self.processor.load()
+            self.processor.set_word_visibility_duration(self.word_visibility_duration)
+
+            self.random_word_count = (int) (audio_duration // self.word_visibility_duration)
+
+            self.random_words = self.random_words_generator.get_random_words(self.random_word_count)
+
+            self.display_random_words()
+
+    def display_random_words(self):
+
+        self.WordListTextEdit.clear()
+
+        for word in self.random_words:
+
+            self.WordListTextEdit.append(word)
 
     def run(self):
 
-        pass
+        self.read_word_list()
+        self.processor.set_word_list(self.random_words)
+        self.processor.run()
+
+    def read_word_list(self):
+
+        text = self.WordListTextEdit.toPlainText()
+        self.random_words = text.split('\n')
+        self.sanitize_random_words_list()
+
+    def sanitize_random_words_list(self):
+
+        while len(self.random_words) > self.random_word_count:
+            self.random_words.pop()
 
 app = QApplication(sys.argv)
 main_window = MainWindow()
