@@ -2,6 +2,8 @@ import sys
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QDialog, QApplication, QFileDialog
 from PyQt5.uic import loadUi
+from src.
+
 
 class MainWindow(QDialog):
 
@@ -20,6 +22,13 @@ class MainWindow(QDialog):
         }
 
         self.IntroductionBrowseButton.clicked.connect(self.browse_introduction_file)
+        self.BackgroundBrowseButton.clicked.connect(self.browse_background_file)
+        self.OutroductionBrowseButton.clicked.connect(self.browse_outroduction_file)
+        self.TransitionBrowseButton.clicked.connect(self.browse_transition_file)
+        self.AudioBrowseButton.clicked.connect(self.browse_audio_file)
+
+        self.LoadButton.clicked.connect(self.load_files)
+        self.RunButton.clicked.connect(self.run)
 
     def browse_introduction_file(self):
 
@@ -55,6 +64,14 @@ class MainWindow(QDialog):
 
         file_name = QFileDialog.getOpenFileName(self, 'Open File', '~/')
         return file_name[0]
+
+    def load_files(self):
+
+        pass
+
+    def run(self):
+
+        pass
 
 app = QApplication(sys.argv)
 main_window = MainWindow()
