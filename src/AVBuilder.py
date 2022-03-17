@@ -29,13 +29,11 @@ class AVBuilder:
         self.word_list = []
 
         self.font_color = 'white'
-        self.word_visibility_duration = 2
+        self.word_visibility_duration = 1
         self.font_size = 18
-        self.start_time = 0
 
     def run(self):
 
-        self.load()
         self.process_background()
         self.build()
         self.write()
@@ -51,6 +49,10 @@ class AVBuilder:
 
         return self.media_data['audio'].get_duration()
 
+    def set_word_visibility_duration(self, duration):
+
+        self.word_visibility_duration = duration
+
     def set_word_list(self, word_list):
 
         self.word_list = word_list
@@ -62,12 +64,11 @@ class AVBuilder:
 
         start_time = 0
 
-        for word in word_list:
+        for word in self.word_list:
 
             self.media_data['background'].write_text(word, duration=self.word_visibility_duration,
                                                      text_color=self.font_color, font_size=self.font_size,
                                                      start_time=start_time)
-
             start_time += self.word_visibility_duration
 
     def build(self):
@@ -81,19 +82,3 @@ class AVBuilder:
     def write(self):
 
         self.output_clip.write_videofile(self.file_paths_dictionary['output'])
-
-
-file_dict = {
-
-    'introduction': r'/home/wasp/Pictures/giphy.gif',
-    'background': r'/home/wasp/Pictures/giphy.gif',
-    'transition': r'/home/wasp/Pictures/giphy.gif',
-    'outroduction': r'/home/wasp/Pictures/giphy.gif',
-    'audio': r'/home/wasp/Music/sample-9s.mp3',
-    'output': r'/home/wasp/Code/Video-Composition-Software/output.mp4'
-}
-
-processor = AVBuilder(file_dict)
-word_list = ['Word', 'List', 'Here']
-processor.set_word_list(word_list)
-processor.run()
