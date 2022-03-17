@@ -31,7 +31,7 @@ class MainWindow(QDialog):
         self.LoadButton.clicked.connect(self.load_files)
         self.RunButton.clicked.connect(self.run)
 
-        self.word_visibility_duration = 1
+        self.word_visibility_duration = 10
         self.processor = None
         self.random_words = None
         self.random_word_count = 0
