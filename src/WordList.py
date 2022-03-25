@@ -7,7 +7,7 @@ class WordList:
     def __init__(self):
 
         directory = os.getcwd()
-        self.words_list_file_path = directory + '/word-list.txt'
+        self.words_list_file_path = directory + '\\word-list.txt'
 
         self.words = []
 
