@@ -48,7 +48,7 @@ Start the application using:
 
 The following window should open:
 
-![Main GUI Image](img/AppGUI.PNG)
+![GUI Image](img/AppGUI.PNG)
 
 Next, use the browse buttons next to the Introduction, Background, Outroduction, and Transitions prompts to add the corresponding video files as input.
 
