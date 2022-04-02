@@ -82,3 +82,8 @@ class AVBuilder:
     def write(self):
 
         self.output_clip.write_videofile(self.file_paths_dictionary['output'])
+
+    def set_font_size(self, value):
+
+        self.font_size = value
+
