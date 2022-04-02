@@ -1,4 +1,5 @@
 import sys
+import os
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QDialog, QApplication, QFileDialog, QSlider, QLabel
 from PyQt5.uic import loadUi
@@ -21,7 +22,7 @@ class MainWindow(QDialog):
             'outroduction': r'',
             'transition': r'',
             'audio': r'',
-            'output': r'/home/wasp/Code/Video-Composition-Software/output.mp4'
+            'output': os.getcwd() + '//output.mp4'
         }
 
         self.IntroductionBrowseButton.clicked.connect(self.browse_introduction_file)
