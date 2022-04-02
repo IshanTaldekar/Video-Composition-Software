@@ -1,7 +1,9 @@
 import sys
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QDialog, QApplication, QFileDialog
+from PyQt5.QtWidgets import QDialog, QApplication, QFileDialog, QSlider, QLabel
 from PyQt5.uic import loadUi
+from PyQt5 import QtCore
+from PyQt5 import uic
 from AVBuilder import *
 from WordList import *
 
@@ -28,6 +30,15 @@ class MainWindow(QDialog):
         self.TransitionBrowseButton.clicked.connect(self.browse_transition_file)
         self.AudioBrowseButton.clicked.connect(self.browse_audio_file)
 
+        self.word_duration_slider = self.findChild(QSlider, "WordDurationHorizontalSlider")
+        self.font_size_slider = self.findChild(QSlider, "FontSizeHorizontalSlider")
+
+        self.word_duration_label = self.findChild(QLabel, "WordDurationLabel")
+        self.font_size_label = self.findChild(QLabel, "FontSizeLabel")
+
+        self.word_duration_slider.valueChanged.connect(self.word_duration_changed)
+        self.font_size_slider.valueChanged.connect(self.font_size_changed)
+
         self.LoadButton.clicked.connect(self.load_files)
         self.RunButton.clicked.connect(self.run)
 
@@ -35,6 +46,7 @@ class MainWindow(QDialog):
         self.processor = None
         self.random_words = None
         self.random_word_count = 0
+        self.font_size = 12
 
         self.random_words_generator = WordList()
 
@@ -94,7 +106,7 @@ class MainWindow(QDialog):
             audio_duration = self.processor.load()
             self.processor.set_word_visibility_duration(self.word_visibility_duration)
 
-            self.random_word_count = (int) (audio_duration // self.word_visibility_duration)
+            self.random_word_count = int(audio_duration // self.word_visibility_duration)
 
             self.random_words = self.random_words_generator.get_random_words(self.random_word_count)
 
@@ -124,6 +136,19 @@ class MainWindow(QDialog):
 
         while len(self.random_words) > self.random_word_count:
             self.random_words.pop()
+
+    def word_duration_changed(self, value):
+
+        self.word_visibility_duration = value
+        self.word_duration_label.setText(str(value))
+
+    def font_size_changed(self, value):
+
+        if self.processor:
+            self.processor.set_font_size(value)
+
+        self.font_size_label.setText(str(value))
+
 
 app = QApplication(sys.argv)
 main_window = MainWindow()
