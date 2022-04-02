@@ -196,8 +196,8 @@
   <widget class="QPushButton" name="LoadButton">
    <property name="geometry">
     <rect>
-     <x>170</x>
-     <y>350</y>
+     <x>590</x>
+     <y>490</y>
      <width>89</width>
      <height>25</height>
     </rect>
@@ -209,8 +209,8 @@
   <widget class="QPushButton" name="RunButton">
    <property name="geometry">
     <rect>
-     <x>430</x>
-     <y>350</y>
+     <x>590</x>
+     <y>560</y>
      <width>89</width>
      <height>25</height>
     </rect>
@@ -222,9 +222,9 @@
   <widget class="QTextEdit" name="WordListTextEdit">
    <property name="geometry">
     <rect>
-     <x>163</x>
+     <x>183</x>
      <y>459</y>
-     <width>361</width>
+     <width>341</width>
      <height>351</height>
     </rect>
    </property>
@@ -232,14 +232,92 @@
   <widget class="QLabel" name="label_6">
    <property name="geometry">
     <rect>
+     <x>30</x>
+     <y>500</y>
+     <width>131</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Word Suggestions</string>
+   </property>
+  </widget>
+  <widget class="QSlider" name="WordDurationHorizontalSlider">
+   <property name="geometry">
+    <rect>
+     <x>210</x>
+     <y>350</y>
+     <width>160</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_7">
+   <property name="geometry">
+    <rect>
      <x>60</x>
-     <y>490</y>
+     <y>340</y>
+     <width>141</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Word Duration (sec)</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_8">
+   <property name="geometry">
+    <rect>
+     <x>430</x>
+     <y>340</y>
+     <width>67</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Font Size</string>
+   </property>
+  </widget>
+  <widget class="QSlider" name="FontSizeHorizontalSlider">
+   <property name="geometry">
+    <rect>
+     <x>510</x>
+     <y>350</y>
+     <width>160</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+  </widget>
+  <widget class="QLabel" name="WordDurationLabel">
+   <property name="geometry">
+    <rect>
+     <x>110</x>
+     <y>370</y>
      <width>67</width>
      <height>17</height>
     </rect>
    </property>
    <property name="text">
-    <string>Word List</string>
+    <string>10</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="FontSizeLabel">
+   <property name="geometry">
+    <rect>
+     <x>450</x>
+     <y>370</y>
+     <width>67</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>12</string>
    </property>
   </widget>
  </widget>
