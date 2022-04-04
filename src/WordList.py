@@ -1,5 +1,6 @@
 import os
 import random
+from sys import platform
 
 
 class WordList:
@@ -7,7 +8,11 @@ class WordList:
     def __init__(self):
 
         directory = os.getcwd()
-        self.words_list_file_path = directory + '\\word-list.txt'
+
+        if platform == 'win32' or platform == 'cygwin':
+            self.words_list_file_path = directory + '\\word-list.txt'
+        elif platform == 'linux':
+            self.words_list_file_path = directory + '/word-list.txt'
 
         self.words = []
 
