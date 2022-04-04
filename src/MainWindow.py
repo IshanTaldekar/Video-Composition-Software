@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import QDialog, QApplication, QFileDialog, QSlider, QLabel
 from PyQt5.uic import loadUi
 from PyQt5 import QtCore
 from PyQt5 import uic
+from sys import platform
 from AVBuilder import *
 from WordList import *
 
@@ -22,8 +23,13 @@ class MainWindow(QDialog):
             'outroduction': r'',
             'transition': r'',
             'audio': r'',
-            'output': os.getcwd() + '//output.mp4'
+            'output': ''
         }
+
+        if platform == 'wind32' or platform == 'cygwin':
+            self.file_dictionary['output'] = os.getcwd() + '//output.mp4'
+        elif platform == 'linux':
+            self.file_dictionary['output'] = os.getcwd() + '/output.mp4'
 
         self.IntroductionBrowseButton.clicked.connect(self.browse_introduction_file)
         self.BackgroundBrowseButton.clicked.connect(self.browse_background_file)
