@@ -140,9 +140,12 @@ class MainWindow(QDialog):
         self.sanitize_random_words_list()
 
     def sanitize_random_words_list(self):
-
+        
         while len(self.random_words) > self.random_word_count:
             self.random_words.pop()
+
+        for word in self.random_words:
+            word.strip()
 
     def word_duration_changed(self, value):
 
