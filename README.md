@@ -13,6 +13,7 @@ Make sure Python's pip module is installed. On Windows, if the executable file r
 
 ### PyQt5 
 Install pyqt5 using pip by running the following command.
+
 `pip install PyQt5`
 
 ### Moviepy
