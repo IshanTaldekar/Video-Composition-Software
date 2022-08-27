@@ -11,6 +11,10 @@ Please install the latest version of Python3 found [here](https://www.python.org
 ### Pip
 Make sure Python's pip module is installed. On Windows, if the executable file recommended above is used to install python, pip should be automatically installed. If pip hasn't been installed, please follow the instructions found [here](https://www.geeksforgeeks.org/how-to-install-pip-on-windows/#:~:text=Download%20and%20Install%20pip%3A&text=Download%20the%20get%2Dpip.py,where%20the%20above%20file%20exists.&text=and%20wait%20through%20the%20installation,now%20installed%20on%20your%20system.).
 
+### PyQt5 
+Install pyqt5 using pip by running the following command.
+`pip install PyQt5`
+
 ### Moviepy
 Install moviepy using pip by running the following command. On Windows, run this command using the Command Prompt (cmd).
 
