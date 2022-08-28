@@ -26,8 +26,8 @@ class MainWindow(QDialog):
             'output': ''
         }
 
-        if platform == 'wind32' or platform == 'cygwin':
-            self.file_dictionary['output'] = os.getcwd() + '//output.mp4'
+        if platform == 'win32' or platform == 'cygwin':
+            self.file_dictionary['output'] = os.getcwd() + '\\output.mp4'
         elif platform == 'linux':
             self.file_dictionary['output'] = os.getcwd() + '/output.mp4'
 
