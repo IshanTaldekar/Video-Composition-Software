@@ -27,9 +27,9 @@ class MainWindow(QDialog):
         }
 
         if platform == 'win32' or platform == 'cygwin':
-            self.file_dictionary['output'] = os.getcwd() + '\\output.mp4'
+            self.file_dictionary['output'] = os.path.join(os.path.join(os.environ['USERPROFILE']), 'Desktop') + '\\output.avi'
         elif platform == 'linux':
-            self.file_dictionary['output'] = os.getcwd() + '/output.mp4'
+            self.file_dictionary['output'] = os.path.join(os.path.join(os.path.expanduser('~')), 'Desktop')  + '/output.avi'
 
         self.IntroductionBrowseButton.clicked.connect(self.browse_introduction_file)
         self.BackgroundBrowseButton.clicked.connect(self.browse_background_file)
