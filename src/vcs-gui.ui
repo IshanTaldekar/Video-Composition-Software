@@ -193,30 +193,17 @@
     <string>Browse</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="LoadButton">
+  <widget class="QPushButton" name="LoadRunCancelButton">
    <property name="geometry">
     <rect>
      <x>590</x>
-     <y>490</y>
+     <y>570</y>
      <width>89</width>
      <height>25</height>
     </rect>
    </property>
    <property name="text">
     <string>Load</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="RunButton">
-   <property name="geometry">
-    <rect>
-     <x>590</x>
-     <y>560</y>
-     <width>89</width>
-     <height>25</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Run</string>
    </property>
   </widget>
   <widget class="QTextEdit" name="WordListTextEdit">
@@ -232,8 +219,8 @@
   <widget class="QLabel" name="label_6">
    <property name="geometry">
     <rect>
-     <x>30</x>
-     <y>500</y>
+     <x>20</x>
+     <y>570</y>
      <width>131</width>
      <height>20</height>
     </rect>
@@ -250,6 +237,9 @@
      <width>160</width>
      <height>16</height>
     </rect>
+   </property>
+   <property name="value">
+    <number>10</number>
    </property>
    <property name="orientation">
     <enum>Qt::Horizontal</enum>
@@ -290,6 +280,15 @@
      <height>16</height>
     </rect>
    </property>
+   <property name="minimum">
+    <number>50</number>
+   </property>
+   <property name="maximum">
+    <number>150</number>
+   </property>
+   <property name="value">
+    <number>90</number>
+   </property>
    <property name="orientation">
     <enum>Qt::Horizontal</enum>
    </property>
@@ -317,7 +316,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>12</string>
+    <string>90</string>
    </property>
   </widget>
  </widget>
