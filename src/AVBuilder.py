@@ -2,11 +2,14 @@ from moviepy.editor import *
 from AudioData import *
 from VideoData import *
 import os
+from threading import Thread
 
 
-class AVBuilder:
+class AVBuilder (Thread):
 
     def __init__(self, file_paths_dictionary):
+
+        super(AVBuilder, self).__init__()
 
         self.file_paths_dictionary = file_paths_dictionary
 
@@ -37,6 +40,7 @@ class AVBuilder:
         self.process_background()
         self.build()
         self.write()
+        self.cleanup()
 
     def load(self):
 
@@ -83,4 +87,13 @@ class AVBuilder:
     def set_font_size(self, value):
 
         self.font_size = value
+
+    def cleanup(self):
+
+        for key, component in self.media_data:
+
+            component.close()
+
+
+
 
