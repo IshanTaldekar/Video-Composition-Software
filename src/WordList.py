@@ -48,4 +48,4 @@ class WordList:
 
     def get_random_index(self):
 
-        return random.randint(0, len(self.words))
+        return random.randint(0, len(self.words) - 1)
