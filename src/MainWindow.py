@@ -10,6 +10,7 @@ from AVBuilder import *
 from WordList import *
 
 
+
 class MainWindow(QDialog):
 
     def __init__(self):
@@ -46,8 +47,8 @@ class MainWindow(QDialog):
         self.word_duration_slider.valueChanged.connect(self.word_duration_changed)
         self.font_size_slider.valueChanged.connect(self.font_size_changed)
 
-        self.LoadRunCancelButton.clicked.connect(self.load_run_cancel_event)
-        self.LoadRunCancelButton.setEnabled(False)
+        self.LoadRunButton.clicked.connect(self.load_run_event)
+        self.LoadRunButton.setEnabled(False)
 
         self.word_visibility_duration = 10
         self.processor = None
@@ -64,7 +65,7 @@ class MainWindow(QDialog):
 
         if self.validate_input_files():
 
-            self.LoadRunCancelButton.setEnabled(True)
+            self.LoadRunButton.setEnabled(True)
 
     def browse_background_file(self):
 
@@ -73,7 +74,7 @@ class MainWindow(QDialog):
 
         if self.validate_input_files():
 
-            self.LoadRunCancelButton.setEnabled(True)
+            self.LoadRunButton.setEnabled(True)
 
     def browse_outroduction_file(self):
 
@@ -82,7 +83,7 @@ class MainWindow(QDialog):
 
         if self.validate_input_files():
 
-            self.LoadRunCancelButton.setEnabled(True)
+            self.LoadRunButton.setEnabled(True)
 
     def browse_transition_file(self):
 
@@ -91,7 +92,7 @@ class MainWindow(QDialog):
 
         if self.validate_input_files():
 
-            self.LoadRunCancelButton.setEnabled(True)
+            self.LoadRunButton.setEnabled(True)
 
     def browse_audio_file(self):
 
@@ -100,7 +101,7 @@ class MainWindow(QDialog):
 
         if self.validate_input_files():
 
-            self.LoadRunCancelButton.setEnabled(True)
+            self.LoadRunButton.setEnabled(True)
 
     def search_video_file(self):
 
@@ -118,22 +119,18 @@ class MainWindow(QDialog):
                self.file_dictionary['outroduction'] != '' and self.file_dictionary['transition'] != '' and \
                self.file_dictionary['audio'] != ''
 
-    def load_run_cancel_event(self):
+    def load_run_event(self):
 
-        if self.LoadRunCancelButton.text() == 'Load':
+        if self.LoadRunButton.text() == 'Load':
 
             self.load_files()
-            self.LoadRunCancelButton.setText('Run')
+            self.LoadRunButton.setText('Run')
 
-        elif self.LoadRunCancelButton.text() == 'Run':
+        elif self.LoadRunButton.text() == 'Run':
 
             self.run()
-            self.LoadRunCancelButton.setText('Cancel')
-
-        else:
-
-            self.cancel()
-            self.LoadRunCancelButton.setText('Load')
+            self.LoadRunButton.setEnabled(True)
+            self.LoadRunButton.setText('Load')
 
     def load_files(self):
 
@@ -147,7 +144,7 @@ class MainWindow(QDialog):
 
         self.display_random_words()
 
-        self.LoadRunCancelButton.setText('Run')
+        self.LoadRunButton.setText('Run')
 
     def display_random_words(self):
 
@@ -159,13 +156,16 @@ class MainWindow(QDialog):
 
     def run(self):
 
-        self.LoadRunCancelButton.setText('Cancel')
-
         self.read_word_list()
+
         self.processor.set_word_list(self.random_words)
+
+        self.LoadRunButton.setEnabled(False)
+
         self.processor.run()
 
-        self.LoadRunCancelButton.setText('Load')
+        self.LoadRunButton.setEnabled(True)
+        self.LoadRunButton.setText('Load')
 
     def read_word_list(self):
 
