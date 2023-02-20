@@ -193,7 +193,7 @@
     <string>Browse</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="LoadRunCancelButton">
+  <widget class="QPushButton" name="LoadRunButton">
    <property name="geometry">
     <rect>
      <x>590</x>
