@@ -29,8 +29,8 @@ class AVBuilder:
         self.word_list = []
 
         self.font_color = 'white'
-        self.word_visibility_duration = 1
-        self.font_size = 18
+        self.word_visibility_duration = 10
+        self.font_size = 90
 
     def run(self):
 
@@ -64,12 +64,9 @@ class AVBuilder:
 
         start_time = 0
 
-        for word in self.word_list:
-
-            self.media_data['background'].write_text(word, duration=self.word_visibility_duration,
-                                                     text_color=self.font_color, font_size=self.font_size,
-                                                     start_time=start_time)
-            start_time += self.word_visibility_duration
+        self.media_data['background'].write_text(self.word_list, duration=self.word_visibility_duration,
+                                                 text_color=self.font_color, font_size=self.font_size,
+                                                 start_time=start_time)
 
     def build(self):
 
@@ -77,11 +74,11 @@ class AVBuilder:
                                                    self.media_data['transition'].get_clip(),
                                                    self.media_data['background'].get_clip(),
                                                    self.media_data['transition'].get_clip(),
-                                                   self.media_data['outroduction'].get_clip()])
+                                                   self.media_data['outroduction'].get_clip()], method='compose')
 
     def write(self):
 
-        self.output_clip.write_videofile(self.file_paths_dictionary['output'], codec="rawvideo")
+        self.output_clip.write_videofile(self.file_paths_dictionary['output'], fps=30, codec="mpeg4", bitrate='50000k')
 
     def set_font_size(self, value):
 
