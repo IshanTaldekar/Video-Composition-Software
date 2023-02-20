@@ -24,9 +24,9 @@ class VideoData:
             return
 
         if no_audio_flag:
-            self.clip = VideoFileClip(self.file_path).without_audio()
+            self.clip = VideoFileClip(self.file_path, target_resolution=(1080, 1920)).without_audio()
         else:
-            self.clip = VideoFileClip(self.file_path)
+            self.clip = VideoFileClip(self.file_path, target_resolution=(1080, 1920))
 
         if self.clip is None:
             print('[VideoData ERROR] clip could not be read.')
@@ -65,17 +65,24 @@ class VideoData:
 
         return self.clip
 
-    def write_text(self, text, position="center", duration=10, text_color="white", start_time=0, font_size=12):
+    def write_text(self, text_list, position="center", duration=10, text_color="white", start_time=0, font_size=12):
 
         if self.clip is None:
             print('[WARNING] clip not read.')
 
-        text_clip = (TextClip(text, fontsize=font_size, color=text_color)
-                     .set_pos(position)
-                     .set_duration(duration)
-                     .set_start(start_time))
+        clips_list = [self.clip]
 
-        self.clip = CompositeVideoClip([self.clip, text_clip])
+        for word in text_list:
+
+            clips_list.append(TextClip(word, fontsize=font_size, color=text_color)
+                              .set_position(position)
+                              .set_duration(duration)
+                              .set_start('00:%02d:%02d.%05d' % (int(start_time/60.0), int((start_time % 60.0)/1),
+                                                                ((start_time % 60) % 1) * 100000), change_end=True))
+
+            start_time += duration
+
+        self.clip = CompositeVideoClip(clips_list)
 
     def write(self, clip_name='VideoDataOutput.mp4'):
 
