@@ -29,7 +29,7 @@ class MainWindow(QDialog):
         if platform == 'win32' or platform == 'cygwin':
             self.file_dictionary['output'] = os.path.join(os.path.join(os.environ['USERPROFILE']), 'Desktop') + '\\output.avi'
         elif platform == 'linux':
-            self.file_dictionary['output'] = os.path.join(os.path.join(os.path.expanduser('~')), 'Desktop')  + '/output.avi'
+            self.file_dictionary['output'] = os.path.join(os.path.join(os.path.expanduser('~')), 'Desktop') + '/output.avi'
 
         self.IntroductionBrowseButton.clicked.connect(self.browse_introduction_file)
         self.BackgroundBrowseButton.clicked.connect(self.browse_background_file)
@@ -46,15 +46,15 @@ class MainWindow(QDialog):
         self.word_duration_slider.valueChanged.connect(self.word_duration_changed)
         self.font_size_slider.valueChanged.connect(self.font_size_changed)
 
-        self.LoadButton.clicked.connect(self.load_files)
-        self.RunButton.clicked.connect(self.run)
+        self.LoadRunCancelButton.clicked.connect(self.load_run_cancel_event)
+        self.LoadRunCancelButton.setEnabled(False)
 
         self.word_visibility_duration = 10
         self.processor = None
-        self.random_words = None
         self.random_word_count = 0
-        self.font_size = 12
+        self.font_size = 90
 
+        self.random_words = None
         self.random_words_generator = WordList()
 
     def browse_introduction_file(self):
@@ -62,25 +62,45 @@ class MainWindow(QDialog):
         self.file_dictionary['introduction'] = self.search_video_file()
         self.IntroductionLineEdit.setText(self.file_dictionary['introduction'])
 
+        if self.validate_input_files():
+
+            self.LoadRunCancelButton.setEnabled(True)
+
     def browse_background_file(self):
 
         self.file_dictionary['background'] = self.search_video_file()
         self.BackgroundLineEdit.setText(self.file_dictionary['background'])
+
+        if self.validate_input_files():
+
+            self.LoadRunCancelButton.setEnabled(True)
 
     def browse_outroduction_file(self):
 
         self.file_dictionary['outroduction'] = self.search_video_file()
         self.OutroductionLineEdit.setText(self.file_dictionary['outroduction'])
 
+        if self.validate_input_files():
+
+            self.LoadRunCancelButton.setEnabled(True)
+
     def browse_transition_file(self):
 
         self.file_dictionary['transition'] = self.search_video_file()
         self.TransitionLineEdit.setText(self.file_dictionary['transition'])
 
+        if self.validate_input_files():
+
+            self.LoadRunCancelButton.setEnabled(True)
+
     def browse_audio_file(self):
 
         self.file_dictionary['audio'] = self.search_audio_file()
         self.AudioLineEdit.setText(self.file_dictionary['audio'])
+
+        if self.validate_input_files():
+
+            self.LoadRunCancelButton.setEnabled(True)
 
     def search_video_file(self):
 
@@ -98,26 +118,36 @@ class MainWindow(QDialog):
                self.file_dictionary['outroduction'] != '' and self.file_dictionary['transition'] != '' and \
                self.file_dictionary['audio'] != ''
 
-    def load_files(self):
+    def load_run_cancel_event(self):
 
-        if not self.validate_input_files():
+        if self.LoadRunCancelButton.text() == 'Load':
 
-            '''
-            TODO: Add error prompt.
-            '''
-            pass
+            self.load_files()
+            self.LoadRunCancelButton.setText('Run')
+
+        elif self.LoadRunCancelButton.text() == 'Run':
+
+            self.run()
+            self.LoadRunCancelButton.setText('Cancel')
 
         else:
 
-            self.processor = AVBuilder(self.file_dictionary)
-            audio_duration = self.processor.load()
-            self.processor.set_word_visibility_duration(self.word_visibility_duration)
+            self.cancel()
+            self.LoadRunCancelButton.setText('Load')
 
-            self.random_word_count = int(audio_duration // self.word_visibility_duration)
+    def load_files(self):
 
-            self.random_words = self.random_words_generator.get_random_words(self.random_word_count)
+        self.processor = AVBuilder(self.file_dictionary)
+        audio_duration = self.processor.load()
+        self.processor.set_word_visibility_duration(self.word_visibility_duration)
 
-            self.display_random_words()
+        self.random_word_count = int(audio_duration // self.word_visibility_duration)
+
+        self.random_words = self.random_words_generator.get_random_words(self.random_word_count)
+
+        self.display_random_words()
+
+        self.LoadRunCancelButton.setText('Run')
 
     def display_random_words(self):
 
@@ -129,9 +159,13 @@ class MainWindow(QDialog):
 
     def run(self):
 
+        self.LoadRunCancelButton.setText('Cancel')
+
         self.read_word_list()
         self.processor.set_word_list(self.random_words)
         self.processor.run()
+
+        self.LoadRunCancelButton.setText('Load')
 
     def read_word_list(self):
 
