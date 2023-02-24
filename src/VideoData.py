@@ -74,7 +74,7 @@ class VideoData:
 
         for word in text_list:
 
-            clips_list.append(TextClip(word, fontsize=font_size, color=text_color)
+            clips_list.append(TextClip(word.upper(), fontsize=font_size, color=text_color)
                               .set_position(position)
                               .set_duration(duration)
                               .set_start('00:%02d:%02d.%05d' % (int(start_time/60.0), int((start_time % 60.0)/1),

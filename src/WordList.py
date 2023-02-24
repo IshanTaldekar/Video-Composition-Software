@@ -29,7 +29,7 @@ class WordList:
 
         for i in range(len(self.words)):
 
-            self.words[i] = self.words[i].strip()
+            self.words[i] = self.words[i].strip().upper()
 
     def print_words(self):
 
