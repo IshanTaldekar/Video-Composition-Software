@@ -111,7 +111,7 @@ class AVBuilder (Thread):
 
     def cleanup(self):
 
-        for key, component in self.media_data:
+        for key, component in self.media_data.items():
 
             component.close()
 
