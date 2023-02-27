@@ -2,7 +2,7 @@ from moviepy.editor import *
 from AudioData import *
 from VideoData import *
 import os
-from threading import Thread
+from threading import Thread, Event
 
 
 class AVBuilder (Thread):
@@ -10,6 +10,9 @@ class AVBuilder (Thread):
     def __init__(self, file_paths_dictionary):
 
         super(AVBuilder, self).__init__()
+
+        # self.setDaemon(True)
+        # self._thread_stopper = Event()
 
         self.file_paths_dictionary = file_paths_dictionary
 
@@ -28,18 +31,33 @@ class AVBuilder (Thread):
             'transition': VideoData()
         }
 
-        self.output_clip = None
+        self.output_clip = VideoData()
         self.word_list = []
 
         self.font_color = 'white'
         self.word_visibility_duration = 10
         self.font_size = 90
 
+        self.run_order = [self.process_background, self.build, self.write]
+
+    # def stop(self):
+    #
+    #     return self._thread_stopper.set()
+    #
+    # def is_stopped(self):
+    #
+    #     return self._thread_stopper.isSet()
+
     def run(self):
 
-        self.process_background()
-        self.build()
-        self.write()
+        for f in self.run_order:
+
+            # if self.is_stopped():
+            #
+            #     break
+
+            f()
+
         self.cleanup()
 
     def load(self):
@@ -74,15 +92,18 @@ class AVBuilder (Thread):
 
     def build(self):
 
-        self.output_clip = concatenate_videoclips([self.media_data['introduction'].get_clip(),
-                                                   self.media_data['transition'].get_clip(),
-                                                   self.media_data['background'].get_clip(),
-                                                   self.media_data['transition'].get_clip(),
-                                                   self.media_data['outroduction'].get_clip()], method='compose')
+        self.output_clip.set_file_path(self.file_paths_dictionary['output'])
+
+        self.output_clip.set_clip(concatenate_videoclips([self.media_data['introduction'].get_clip(),
+                                                          self.media_data['transition'].get_clip(),
+                                                          self.media_data['background'].get_clip(),
+                                                          self.media_data['transition'].get_clip(),
+                                                          self.media_data['outroduction'].get_clip()],
+                                                         method='compose'))
 
     def write(self):
 
-        self.output_clip.write_videofile(self.file_paths_dictionary['output'], fps=30, codec="mpeg4", bitrate='50000k')
+        self.output_clip.write()
 
     def set_font_size(self, value):
 
