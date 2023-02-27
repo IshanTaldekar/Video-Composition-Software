@@ -13,6 +13,17 @@ from WordList import *
 import time
 
 
+def threaded(fn):
+
+    def wrapper(*args, **kwargs):
+
+        thread = threading.Thread(target=fn, args=args, kwargs=kwargs)
+        thread.start()
+        return thread
+
+    return wrapper
+
+
 class MainWindow(QDialog):
 
     def __init__(self):
@@ -63,8 +74,8 @@ class MainWindow(QDialog):
         self.random_words = None
         self.random_words_generator = WordList()
 
-        # self.runner_thread = None
-        # self.runner_thread_stop = False
+        self.runner_thread = None
+        self.runner_thread_stop = False
 
     def browse_introduction_file(self):
 
@@ -155,16 +166,16 @@ class MainWindow(QDialog):
 
         if self.RunCancelButton.text() == 'Run':
 
-            # self.runner_thread = self.run()
-            self.run()
+            self.runner_thread = self.run()
             self.RunCancelButton.setText('Cancel')
 
         elif self.runner_thread is not None:
 
-            # self.runner_thread_stop = True
+            self.runner_thread_stop = True
             self.RunCancelButton.setText('Run')
             self.RunCancelButton.setEnabled(False)
 
+    @threaded
     def run(self):
 
         self.read_word_list()
@@ -191,7 +202,7 @@ class MainWindow(QDialog):
             time.sleep(1)
             completed += 0.083
 
-        # self.runner_thread_stop = False
+        self.runner_thread_stop = False
         self.processor = None
 
         self.ProgressBar.setValue(100)
