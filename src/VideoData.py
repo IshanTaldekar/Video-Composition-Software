@@ -17,7 +17,7 @@ class VideoData:
 
         self.file_path = file_path
 
-    def read(self, no_audio_flag=True):
+    def read(self, no_audio_flag=False):
 
         if self.file_path is None:
             print('[VideoData ERROR] file path not or incorrectly specified.')
@@ -65,7 +65,7 @@ class VideoData:
 
         return self.clip
 
-    def write_text(self, text_list, position="center", duration=10, text_color="white", start_time=0, font_size=12):
+    def add_text(self, text_list, position="center", duration=10, text_color="white", start_time=0, font_size=12):
 
         if self.clip is None:
             print('[WARNING] clip not read.')
@@ -74,9 +74,15 @@ class VideoData:
 
         for word in text_list:
 
-            clips_list.append(TextClip(word.upper(), fontsize=font_size, color=text_color)
+            word_duration = duration
+
+            if word == text_list[-1]:
+
+                word_duration = self.clip.duration - start_time
+
+            clips_list.append(TextClip(word.upper(), fontsize=font_size, font='DejaVu-Sans', color=text_color)
                               .set_position(position)
-                              .set_duration(duration)
+                              .set_duration(word_duration)
                               .set_start('00:%02d:%02d.%05d' % (int(start_time/60.0), int((start_time % 60.0)/1),
                                                                 ((start_time % 60) % 1) * 100000), change_end=True))
 
@@ -84,13 +90,14 @@ class VideoData:
 
         self.clip = CompositeVideoClip(clips_list)
 
-    def write(self, clip_name='VideoDataOutput.mp4'):
+    def write(self):
 
         if self.clip is None:
             print('[VideoData ERROR] No clip available.')
             return
 
-        self.clip.write_videofile(clip_name, fps=30, threads=8, codec="mpeg4")
+        self.clip.write_videofile(self.file_path, fps=30, threads=16, codec="mpeg4",  bitrate='50000k', verbose=False,
+                                  logger=None)
 
     def close(self):
 
