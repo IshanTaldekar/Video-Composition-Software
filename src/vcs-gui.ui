@@ -193,7 +193,7 @@
     <string>Browse</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="LoadRunButton">
+  <widget class="QPushButton" name="RunCancelButton">
    <property name="geometry">
     <rect>
      <x>590</x>
@@ -203,7 +203,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Load</string>
+    <string>Run</string>
    </property>
   </widget>
   <widget class="QTextEdit" name="WordListTextEdit">
@@ -317,6 +317,32 @@
    </property>
    <property name="text">
     <string>90</string>
+   </property>
+  </widget>
+  <widget class="QProgressBar" name="ProgressBar">
+   <property name="geometry">
+    <rect>
+     <x>580</x>
+     <y>650</y>
+     <width>118</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="value">
+    <number>0</number>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="LoadButton">
+   <property name="geometry">
+    <rect>
+     <x>590</x>
+     <y>530</y>
+     <width>89</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Load</string>
    </property>
   </widget>
  </widget>
