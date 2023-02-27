@@ -11,8 +11,8 @@ class AVBuilder (Thread):
 
         super(AVBuilder, self).__init__()
 
-        # self.setDaemon(True)
-        # self._thread_stopper = Event()
+        self.setDaemon(True)
+        self._thread_stopper = Event()
 
         self.file_paths_dictionary = file_paths_dictionary
 
@@ -40,21 +40,21 @@ class AVBuilder (Thread):
 
         self.run_order = [self.process_background, self.build, self.write]
 
-    # def stop(self):
-    #
-    #     return self._thread_stopper.set()
-    #
-    # def is_stopped(self):
-    #
-    #     return self._thread_stopper.isSet()
+    def stop(self):
+
+        return self._thread_stopper.set()
+
+    def is_stopped(self):
+
+        return self._thread_stopper.isSet()
 
     def run(self):
 
         for f in self.run_order:
 
-            # if self.is_stopped():
-            #
-            #     break
+            if self.is_stopped():
+
+                break
 
             f()
 
