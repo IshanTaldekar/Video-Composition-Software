@@ -1,5 +1,7 @@
 import sys
 import os
+import threading
+
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QDialog, QApplication, QFileDialog, QSlider, QLabel
 from PyQt5.uic import loadUi
@@ -47,8 +49,11 @@ class MainWindow(QDialog):
         self.word_duration_slider.valueChanged.connect(self.word_duration_changed)
         self.font_size_slider.valueChanged.connect(self.font_size_changed)
 
-        self.LoadRunButton.clicked.connect(self.load_run_event)
-        self.LoadRunButton.setEnabled(False)
+        self.LoadButton.clicked.connect(self.load_files)
+        self.LoadButton.setEnabled(False)
+
+        self.RunCancelButton.clicked.connect(self.run_cancel_handler)
+        self.RunCancelButton.setEnabled(False)
 
         self.word_visibility_duration = 10
         self.processor = None
@@ -58,6 +63,9 @@ class MainWindow(QDialog):
         self.random_words = None
         self.random_words_generator = WordList()
 
+        # self.runner_thread = None
+        # self.runner_thread_stop = False
+
     def browse_introduction_file(self):
 
         self.file_dictionary['introduction'] = self.search_video_file()
@@ -65,7 +73,7 @@ class MainWindow(QDialog):
 
         if self.validate_input_files():
 
-            self.LoadRunButton.setEnabled(True)
+            self.LoadButton.setEnabled(True)
 
     def browse_background_file(self):
 
@@ -74,7 +82,7 @@ class MainWindow(QDialog):
 
         if self.validate_input_files():
 
-            self.LoadRunButton.setEnabled(True)
+            self.LoadButton.setEnabled(True)
 
     def browse_outroduction_file(self):
 
@@ -83,7 +91,7 @@ class MainWindow(QDialog):
 
         if self.validate_input_files():
 
-            self.LoadRunButton.setEnabled(True)
+            self.LoadButton.setEnabled(True)
 
     def browse_transition_file(self):
 
@@ -92,7 +100,7 @@ class MainWindow(QDialog):
 
         if self.validate_input_files():
 
-            self.LoadRunButton.setEnabled(True)
+            self.LoadButton.setEnabled(True)
 
     def browse_audio_file(self):
 
@@ -101,7 +109,7 @@ class MainWindow(QDialog):
 
         if self.validate_input_files():
 
-            self.LoadRunButton.setEnabled(True)
+            self.LoadButton.setEnabled(True)
 
     def search_video_file(self):
 
@@ -119,19 +127,6 @@ class MainWindow(QDialog):
                self.file_dictionary['outroduction'] != '' and self.file_dictionary['transition'] != '' and \
                self.file_dictionary['audio'] != ''
 
-    def load_run_event(self):
-
-        if self.LoadRunButton.text() == 'Load':
-
-            self.load_files()
-            self.LoadRunButton.setText('Run')
-
-        elif self.LoadRunButton.text() == 'Run':
-
-            self.run()
-            self.LoadRunButton.setEnabled(True)
-            self.LoadRunButton.setText('Load')
-
     def load_files(self):
 
         self.ProgressBar.setValue(0)
@@ -146,7 +141,7 @@ class MainWindow(QDialog):
 
         self.display_random_words()
 
-        self.LoadRunButton.setText('Run')
+        self.RunCancelButton.setEnabled(True)
 
     def display_random_words(self):
 
@@ -156,13 +151,29 @@ class MainWindow(QDialog):
 
             self.WordListTextEdit.append(word)
 
+    def run_cancel_handler(self):
+
+        if self.RunCancelButton.text() == 'Run':
+
+            # self.runner_thread = self.run()
+            self.run()
+            self.RunCancelButton.setText('Cancel')
+
+        elif self.runner_thread is not None:
+
+            # self.runner_thread_stop = True
+            self.RunCancelButton.setText('Run')
+            self.RunCancelButton.setEnabled(False)
+
     def run(self):
 
         self.read_word_list()
 
         self.processor.set_word_list(self.random_words)
 
-        self.LoadRunButton.setEnabled(False)
+        self.LoadButton.setEnabled(False)
+
+        self.RunCancelButton.setText('Cancel')
 
         self.processor.start()
 
@@ -170,14 +181,24 @@ class MainWindow(QDialog):
 
         while self.processor.is_alive():
 
+            if self.runner_thread_stop:
+
+                self.processor.stop()
+                self.processor = None
+                break
+
             self.ProgressBar.setValue(completed)
             time.sleep(1)
             completed += 0.083
 
+        # self.runner_thread_stop = False
+        self.processor = None
+
         self.ProgressBar.setValue(100)
 
-        self.LoadRunButton.setEnabled(True)
-        self.LoadRunButton.setText('Load')
+        self.RunCancelButton.setText('Run')
+        self.RunCancelButton.setEnabled(False)
+        self.LoadButton.setEnabled(True)
 
     def read_word_list(self):
 
