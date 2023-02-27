@@ -8,7 +8,7 @@ from PyQt5 import uic
 from sys import platform
 from AVBuilder import *
 from WordList import *
-
+import time
 
 
 class MainWindow(QDialog):
@@ -134,6 +134,8 @@ class MainWindow(QDialog):
 
     def load_files(self):
 
+        self.ProgressBar.setValue(0)
+
         self.processor = AVBuilder(self.file_dictionary)
         audio_duration = self.processor.load()
         self.processor.set_word_visibility_duration(self.word_visibility_duration)
@@ -162,7 +164,17 @@ class MainWindow(QDialog):
 
         self.LoadRunButton.setEnabled(False)
 
-        self.processor.run()
+        self.processor.start()
+
+        completed = 0
+
+        while self.processor.is_alive():
+
+            self.ProgressBar.setValue(completed)
+            time.sleep(1)
+            completed += 0.083
+
+        self.ProgressBar.setValue(100)
 
         self.LoadRunButton.setEnabled(True)
         self.LoadRunButton.setText('Load')
