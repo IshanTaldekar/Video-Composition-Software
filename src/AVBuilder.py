@@ -86,7 +86,7 @@ class AVBuilder (Thread):
 
         start_time = 0
 
-        self.media_data['background'].write_text(self.word_list, duration=self.word_visibility_duration,
+        self.media_data['background'].add_text(self.word_list, duration=self.word_visibility_duration,
                                                  text_color=self.font_color, font_size=self.font_size,
                                                  start_time=start_time)
 
