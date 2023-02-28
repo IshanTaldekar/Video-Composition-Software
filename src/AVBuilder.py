@@ -104,6 +104,7 @@ class AVBuilder (Thread):
     def write(self):
 
         self.output_clip.write()
+        self.output_clip.close()
 
     def set_font_size(self, value):
 
@@ -113,7 +114,9 @@ class AVBuilder (Thread):
 
         for key, component in self.media_data.items():
 
-            component.close()
+            if component.is_open():
+
+                component.close()
 
 
 
