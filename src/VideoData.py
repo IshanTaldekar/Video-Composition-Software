@@ -6,6 +6,7 @@ class VideoData:
     def __init__(self, file_path=None):
 
         self.file_path = file_path
+        self.all_clips = []
         self.clip = None
 
     def set_file_path(self, file_path):
@@ -41,10 +42,12 @@ class VideoData:
             print('[VideoData ERROR] Cannot loop for a negative duration.')
             return
 
+        self.all_clips.append(self.clip)
         self.clip = self.clip.loop(duration=loop_duration)
 
     def set_clip(self, new_clip):
 
+        self.all_clips.append(self.clip)
         self.clip = new_clip
 
     def get_duration(self):
@@ -89,6 +92,7 @@ class VideoData:
             start_time += duration
 
         self.clip = CompositeVideoClip(clips_list)
+        self.all_clips.append(clips_list)
 
     def write(self):
 
@@ -96,10 +100,23 @@ class VideoData:
             print('[VideoData ERROR] No clip available.')
             return
 
-        self.clip.write_videofile(self.file_path, fps=30, threads=8, codec='mpeg4',  bitrate='50000k', verbose=False,
+        self.clip.write_videofile(self.file_path, fps=30, threads=8, codec='mpeg4',  bitrate='500000k', verbose=False,
                                   logger=None)
 
     def close(self):
 
         self.clip.close()
+
+        while len(self.all_clips) > 0:
+
+            if self.all_clips[-1] is not None:
+
+                self.all_clips[-1].close()
+
+            self.all_clips.pop()
+
         self.clip = None
+
+    def is_open(self):
+
+        return self.clip is not None and len(self.all_clips) == 0
