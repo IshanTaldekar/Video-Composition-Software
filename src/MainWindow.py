@@ -169,9 +169,12 @@ class MainWindow(QDialog):
             self.runner_thread = self.run()
             self.RunCancelButton.setText('Cancel')
 
-        elif self.runner_thread is not None:
+        else:
 
-            self.runner_thread_stop = True
+            if self.runner_thread is not None:
+
+                self.runner_thread_stop = True
+
             self.RunCancelButton.setText('Run')
             self.RunCancelButton.setEnabled(False)
 
@@ -183,8 +186,6 @@ class MainWindow(QDialog):
         self.processor.set_word_list(self.random_words)
 
         self.LoadButton.setEnabled(False)
-
-        self.RunCancelButton.setText('Cancel')
 
         self.processor.start()
 
@@ -198,12 +199,16 @@ class MainWindow(QDialog):
                 self.processor = None
                 break
 
-            self.ProgressBar.setValue(completed)
+            self.ProgressBar.setValue(int(completed))
             time.sleep(1)
-            completed += 0.083
+
+            if completed < 99:
+
+                completed += 0.083
 
         self.runner_thread_stop = False
         self.processor = None
+        self.runner_thread = None
 
         self.ProgressBar.setValue(100)
 
