@@ -1,16 +1,18 @@
 import sys
 import os
 import threading
+import time
+import pickle
 
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QDialog, QApplication, QFileDialog, QSlider, QLabel
 from PyQt5.uic import loadUi
-from PyQt5 import QtCore
+from PyQt5.QtCore import Qt
 from PyQt5 import uic
 from sys import platform
+
 from AVBuilder import *
 from WordList import *
-import time
 
 
 def threaded(fn):
@@ -41,9 +43,14 @@ class MainWindow(QDialog):
         }
 
         if platform == 'win32' or platform == 'cygwin':
+
             self.file_dictionary['output'] = os.path.join(os.path.join(os.environ['USERPROFILE']), 'Desktop') + '\\output.avi'
+            self.config_file_path = os.getcwd() + '\\config.p'
+
         elif platform == 'linux':
+
             self.file_dictionary['output'] = os.path.join(os.path.join(os.path.expanduser('~')), 'Desktop') + '/output.avi'
+            self.config_file_path = os.getcwd() + '/config.p'
 
         self.IntroductionBrowseButton.clicked.connect(self.browse_introduction_file)
         self.BackgroundBrowseButton.clicked.connect(self.browse_background_file)
@@ -51,14 +58,11 @@ class MainWindow(QDialog):
         self.TransitionBrowseButton.clicked.connect(self.browse_transition_file)
         self.AudioBrowseButton.clicked.connect(self.browse_audio_file)
 
-        self.word_duration_slider = self.findChild(QSlider, "WordDurationHorizontalSlider")
-        self.font_size_slider = self.findChild(QSlider, "FontSizeHorizontalSlider")
+        self.WordDurationHorizontalSlider.valueChanged.connect(self.word_duration_slider_changed)
+        self.FontSizeHorizontalSlider.valueChanged.connect(self.font_size_slider_changed)
 
-        self.word_duration_label = self.findChild(QLabel, "WordDurationLabel")
-        self.font_size_label = self.findChild(QLabel, "FontSizeLabel")
-
-        self.word_duration_slider.valueChanged.connect(self.word_duration_changed)
-        self.font_size_slider.valueChanged.connect(self.font_size_changed)
+        self.WordDurationLineEdit.textChanged.connect(self.word_duration_line_edit_changed)
+        self.FontSizeLineEdit.textChanged.connect(self.font_size_line_edit_changed)
 
         self.LoadButton.clicked.connect(self.load_files)
         self.LoadButton.setEnabled(False)
@@ -77,10 +81,23 @@ class MainWindow(QDialog):
         self.runner_thread = None
         self.runner_thread_stop = False
 
+        self.ProgressBar.setAlignment(Qt.AlignCenter)
+
+        self.config = {}
+        self.read_last_configuration()
+
+        self.set_last_config()
+
+        if self.validate_input_files():
+
+            self.LoadButton.setEnabled(True)
+
     def browse_introduction_file(self):
 
         self.file_dictionary['introduction'] = self.search_video_file()
         self.IntroductionLineEdit.setText(self.file_dictionary['introduction'])
+
+        self.config['introduction'] = self.file_dictionary['introduction']
 
         if self.validate_input_files():
 
@@ -91,6 +108,8 @@ class MainWindow(QDialog):
         self.file_dictionary['background'] = self.search_video_file()
         self.BackgroundLineEdit.setText(self.file_dictionary['background'])
 
+        self.config['background'] = self.file_dictionary['background']
+
         if self.validate_input_files():
 
             self.LoadButton.setEnabled(True)
@@ -99,6 +118,8 @@ class MainWindow(QDialog):
 
         self.file_dictionary['outroduction'] = self.search_video_file()
         self.OutroductionLineEdit.setText(self.file_dictionary['outroduction'])
+
+        self.config['outroduction'] = self.file_dictionary['outroduction']
 
         if self.validate_input_files():
 
@@ -109,6 +130,8 @@ class MainWindow(QDialog):
         self.file_dictionary['transition'] = self.search_video_file()
         self.TransitionLineEdit.setText(self.file_dictionary['transition'])
 
+        self.config['transition'] = self.file_dictionary['transition']
+
         if self.validate_input_files():
 
             self.LoadButton.setEnabled(True)
@@ -117,6 +140,8 @@ class MainWindow(QDialog):
 
         self.file_dictionary['audio'] = self.search_audio_file()
         self.AudioLineEdit.setText(self.file_dictionary['audio'])
+
+        self.config['audio'] = self.file_dictionary['audio']
 
         if self.validate_input_files():
 
@@ -187,6 +212,8 @@ class MainWindow(QDialog):
 
         self.LoadButton.setEnabled(False)
 
+        self.write_current_configuration()
+
         self.processor.start()
 
         completed = 0
@@ -230,17 +257,101 @@ class MainWindow(QDialog):
         for word in self.random_words:
             word.strip()
 
-    def word_duration_changed(self, value):
+    def word_duration_slider_changed(self, value):
 
         self.word_visibility_duration = value
-        self.word_duration_label.setText(str(value))
+        self.WordDurationLineEdit.setText(str(value))
 
-    def font_size_changed(self, value):
+        self.config['word-duration'] = float(value)
+
+    def font_size_slider_changed(self, value):
 
         if self.processor:
+
             self.processor.set_font_size(value)
 
-        self.font_size_label.setText(str(value))
+        self.FontSizeLineEdit.setText(str(value))
+
+        self.config['font-size'] = float(value)
+
+    def word_duration_line_edit_changed(self, value):
+
+        if len(value) == 0:
+
+            return
+
+        self.word_visibility_duration = float(value)
+        self.WordDurationHorizontalSlider.setValue(int(self.word_visibility_duration))
+
+        self.config['word-duration'] = float(value)
+
+    def font_size_line_edit_changed(self, value):
+
+        if len(value) == 0:
+
+            return
+
+        value = int(float(value))
+
+        if self.processor:
+
+            self.processor.set_font_size(value)
+
+        self.FontSizeHorizontalSlider.setValue(value)
+
+        self.config['font-size'] = float(value)
+
+    def read_last_configuration(self):
+
+        file = open(self.config_file_path, 'rb')
+
+        try:
+
+            self.config = pickle.load(file)
+
+        except EOFError:
+
+            self.config = {'introduction': '',
+                           'outroduction': '',
+                           'background': '',
+                           'transition': '',
+                           'audio': '',
+                           'word-duration': 10.0,
+                           'font-size': 90.0}
+
+        file.close()
+
+    def write_current_configuration(self):
+
+        file = open(self.config_file_path, 'wb')
+        pickle.dump(self.config, file)
+        file.close()
+
+    def set_last_config(self):
+
+        self.IntroductionLineEdit.setText(self.config['introduction'])
+        self.BackgroundLineEdit.setText(self.config['background'])
+        self.OutroductionLineEdit.setText(self.config['outroduction'])
+        self.TransitionLineEdit.setText(self.config['transition'])
+        self.AudioLineEdit.setText(self.config['audio'])
+
+        self.WordDurationHorizontalSlider.setValue(int(self.config['word-duration']))
+        self.WordDurationLineEdit.setText(str(self.config['word-duration']))
+
+        self.FontSizeHorizontalSlider.setValue(int(self.config['font-size']))
+        self.FontSizeLineEdit.setText(str(self.config['font-size']))
+
+        self.file_dictionary['introduction'] = self.config['introduction']
+        self.file_dictionary['background'] = self.config['background']
+        self.file_dictionary['outroduction'] = self.config['outroduction']
+        self.file_dictionary['transition'] = self.config['transition']
+        self.file_dictionary['audio'] = self.config['audio']
+
+        self.word_visibility_duration = self.config['word-duration']
+
+        if self.processor is not None:
+
+            self.processor.set_font_size(int(self.config['font-size']))
 
 
 app = QApplication(sys.argv)
