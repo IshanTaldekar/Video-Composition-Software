@@ -62,3 +62,7 @@ class AudioData:
 
         self.clip.close()
         self.clip = None
+
+    def is_open(self):
+
+        return self.clip is not None
