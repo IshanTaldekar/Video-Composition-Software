@@ -266,7 +266,7 @@ class MainWindow(QDialog):
 
     def font_size_slider_changed(self, value):
 
-        if self.processor:
+        if self.processor is not None:
 
             self.processor.set_font_size(value)
 
@@ -293,7 +293,7 @@ class MainWindow(QDialog):
 
         value = int(float(value))
 
-        if self.processor:
+        if self.processor is not None:
 
             self.processor.set_font_size(value)
 
