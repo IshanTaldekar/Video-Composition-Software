@@ -1,13 +1,13 @@
-from moviepy.editor import *
-from AudioData import *
-from VideoData import *
+from moviepy.editor import concatenate_videoclips
+from AudioData import AudioData
+from VideoData import VideoData
 import os
 from threading import Thread, Event
 
 
 class AVBuilder (Thread):
 
-    def __init__(self, file_paths_dictionary):
+    def __init__(self, file_paths_dictionary, file_keep_audio_status):
 
         super(AVBuilder, self).__init__()
 
@@ -15,6 +15,7 @@ class AVBuilder (Thread):
         self._thread_stopper = Event()
 
         self.file_paths_dictionary = file_paths_dictionary
+        self.file_keep_audio_status = file_keep_audio_status
 
         if self.file_paths_dictionary['background'] is None or self.file_paths_dictionary['audio'] is None:
             print('[AVBuilder ERROR] background or audio file were not specified.')
@@ -67,7 +68,7 @@ class AVBuilder (Thread):
             if self.file_paths_dictionary[file_type] is not None:
 
                 self.media_data[file_type].set_file_path(self.file_paths_dictionary[file_type])
-                self.media_data[file_type].read()
+                self.media_data[file_type].read(self.file_keep_audio_status[file_type])
 
         return self.media_data['audio'].get_duration()
 

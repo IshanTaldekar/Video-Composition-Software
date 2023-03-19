@@ -5,14 +5,13 @@ import time
 import pickle
 
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QDialog, QApplication, QFileDialog, QSlider, QLabel
+from PyQt5.QtWidgets import QDialog, QApplication, QFileDialog
 from PyQt5.uic import loadUi
 from PyQt5.QtCore import Qt
-from PyQt5 import uic
 from sys import platform
 
-from AVBuilder import *
-from WordList import *
+from AVBuilder import AVBuilder
+from WordList import WordList
 
 
 def threaded(fn):
@@ -42,6 +41,14 @@ class MainWindow(QDialog):
             'output': ''
         }
 
+        self.file_keep_audio_status = {
+            'introduction': False,
+            'background': False,
+            'outroduction': False,
+            'transition': False,
+            'audio': True
+        }
+
         if platform == 'win32' or platform == 'cygwin':
 
             self.file_dictionary['output'] = os.path.join(os.path.join(os.environ['USERPROFILE']), 'Desktop') + '\\output.mp4'
@@ -57,6 +64,11 @@ class MainWindow(QDialog):
         self.OutroductionBrowseButton.clicked.connect(self.browse_outroduction_file)
         self.TransitionBrowseButton.clicked.connect(self.browse_transition_file)
         self.AudioBrowseButton.clicked.connect(self.browse_audio_file)
+
+        self.IntroductionKeepAudioCheckBox.clicked.connect(self.update_introduction_keep_audio_status)
+        self.BackgroundKeepAudioCheckBox.clicked.connect(self.update_background_keep_audio_status)
+        self.OutroductionKeepAudioCheckBox.clicked.connect(self.update_outroduction_keep_audio_status)
+        self.TransitionKeepAudioCheckBox.clicked.connect(self.update_transition_keep_audio_status)
 
         self.WordDurationHorizontalSlider.valueChanged.connect(self.word_duration_slider_changed)
         self.FontSizeHorizontalSlider.valueChanged.connect(self.font_size_slider_changed)
@@ -167,7 +179,7 @@ class MainWindow(QDialog):
 
         self.ProgressBar.setValue(0)
 
-        self.processor = AVBuilder(self.file_dictionary)
+        self.processor = AVBuilder(self.file_dictionary, self.file_keep_audio_status)
         audio_duration = self.processor.load()
         self.processor.set_word_visibility_duration(self.word_visibility_duration)
 
@@ -353,12 +365,28 @@ class MainWindow(QDialog):
 
             self.processor.set_font_size(int(self.config['font-size']))
 
+    def update_introduction_keep_audio_status(self, is_checked):
+
+        self.file_keep_audio_status['introduction'] = is_checked
+
+    def update_background_keep_audio_status(self, is_checked):
+
+        self.file_keep_audio_status['background'] = is_checked
+
+    def update_outroduction_keep_audio_status(self, is_checked):
+
+        self.file_keep_audio_status['outroduction'] = is_checked
+
+    def update_transition_keep_audio_status(self, is_checked):
+
+        self.file_keep_audio_status['transition'] = is_checked
+
 
 app = QApplication(sys.argv)
 main_window = MainWindow()
 widget = QtWidgets.QStackedWidget()
 widget.addWidget(main_window)
-widget.setFixedWidth(750)
-widget.setFixedHeight(900)
+widget.setFixedWidth(802)
+widget.setFixedHeight(874)
 widget.show()
 sys.exit(app.exec_())

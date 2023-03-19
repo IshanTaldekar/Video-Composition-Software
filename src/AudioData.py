@@ -1,4 +1,4 @@
-from moviepy.editor import *
+from moviepy.editor import AudioFileClip
 
 
 class AudioData:
@@ -16,7 +16,7 @@ class AudioData:
 
         self.file_path = file_path
 
-    def read(self):
+    def read(self, no_audio_flag=False):
 
         if self.file_path is None:
             print('[AudioData ERROR] file path not specified.')
