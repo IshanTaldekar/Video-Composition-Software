@@ -70,6 +70,10 @@ class MainWindow(QDialog):
         self.OutroductionKeepAudioCheckBox.clicked.connect(self.update_outroduction_keep_audio_status)
         self.TransitionKeepAudioCheckBox.clicked.connect(self.update_transition_keep_audio_status)
 
+        self.PlayBeatAtVideoStartCheckBox.clicked.connect(self.update_play_beat_at_video_start_status)
+        self.UsePhoneAspectRatioCheckBox.clicked.connect(self.update_use_phone_aspect_ratio_status)
+        self.GenerateIntroductionCheckBox.clicked.connect(self.update_generate_introduction_status)
+
         self.WordDurationHorizontalSlider.valueChanged.connect(self.word_duration_slider_changed)
         self.FontSizeHorizontalSlider.valueChanged.connect(self.font_size_slider_changed)
 
@@ -82,10 +86,29 @@ class MainWindow(QDialog):
         self.RunCancelButton.clicked.connect(self.run_cancel_handler)
         self.RunCancelButton.setEnabled(False)
 
+        self.play_beat_at_video_start_flag = False
+        self.use_phone_aspect_ratio_flag = False
+        self.generate_introduction_flag = False
+
+        self.BeatDropAtLabel.setDisabled(True)
+        self.BeatDropAtLineEdit.setDisabled(True)
+
+        self.BeatDropAtLabel.setVisible(False)
+        self.BeatDropAtLineEdit.setVisible(False)
+
+        if self.generate_introduction_flag:
+
+            self.BeatDropAtLabel.setDisabled(False)
+            self.BeatDropAtLineEdit.setDisabled(False)
+
+            self.BeatDropAtLabel.setVisible(True)
+            self.BeatDropAtLineEdit.setVisible(True)
+
         self.word_visibility_duration = 10
         self.processor = None
         self.random_word_count = 0
         self.font_size = 90
+        self.introduction_length = 0
 
         self.random_words = None
         self.random_words_generator = WordList()
@@ -106,80 +129,75 @@ class MainWindow(QDialog):
 
     def browse_introduction_file(self):
 
-        self.file_dictionary['introduction'] = self.search_video_file()
+        self.file_dictionary['introduction'] = self.search_file()
         self.IntroductionLineEdit.setText(self.file_dictionary['introduction'])
 
         self.config['introduction'] = self.file_dictionary['introduction']
 
-        if self.validate_input_files():
-
-            self.LoadButton.setEnabled(True)
-
     def browse_background_file(self):
 
-        self.file_dictionary['background'] = self.search_video_file()
+        self.file_dictionary['background'] = self.search_file()
         self.BackgroundLineEdit.setText(self.file_dictionary['background'])
 
         self.config['background'] = self.file_dictionary['background']
 
-        if self.validate_input_files():
-
-            self.LoadButton.setEnabled(True)
+        self.set_load_and_run_button_status()
 
     def browse_outroduction_file(self):
 
-        self.file_dictionary['outroduction'] = self.search_video_file()
+        self.file_dictionary['outroduction'] = self.search_file()
         self.OutroductionLineEdit.setText(self.file_dictionary['outroduction'])
 
         self.config['outroduction'] = self.file_dictionary['outroduction']
 
-        if self.validate_input_files():
-
-            self.LoadButton.setEnabled(True)
-
     def browse_transition_file(self):
 
-        self.file_dictionary['transition'] = self.search_video_file()
+        self.file_dictionary['transition'] = self.search_file()
         self.TransitionLineEdit.setText(self.file_dictionary['transition'])
 
         self.config['transition'] = self.file_dictionary['transition']
 
-        if self.validate_input_files():
-
-            self.LoadButton.setEnabled(True)
-
     def browse_audio_file(self):
 
-        self.file_dictionary['audio'] = self.search_audio_file()
+        self.file_dictionary['audio'] = self.search_file()
         self.AudioLineEdit.setText(self.file_dictionary['audio'])
 
         self.config['audio'] = self.file_dictionary['audio']
 
+        self.set_load_and_run_button_status()
+
+    def set_load_and_run_button_status(self):
+
         if self.validate_input_files():
 
             self.LoadButton.setEnabled(True)
 
-    def search_video_file(self):
+        else:
 
-        file_name = QFileDialog.getOpenFileName(self, 'Open File', '~/')
-        return file_name[0]
+            self.LoadButton.setEnabled(False)
+            self.RunCancelButton.setEnabled(False)
 
-    def search_audio_file(self):
+    def search_file(self):
 
         file_name = QFileDialog.getOpenFileName(self, 'Open File', '~/')
         return file_name[0]
 
     def validate_input_files(self):
 
-        return self.file_dictionary['introduction'] != '' and self.file_dictionary['background'] != '' and \
-               self.file_dictionary['outroduction'] != '' and self.file_dictionary['transition'] != '' and \
-               self.file_dictionary['audio'] != ''
+        if self.generate_introduction_flag and self.introduction_length == -1:
+
+            return False
+
+        return self.file_dictionary['background'] != '' and self.file_dictionary['audio'] != ''
 
     def load_files(self):
 
         self.ProgressBar.setValue(0)
 
-        self.processor = AVBuilder(self.file_dictionary, self.file_keep_audio_status)
+        self.processor = AVBuilder(self.file_dictionary, self.file_keep_audio_status,
+                                   self.play_beat_at_video_start_flag, self.use_phone_aspect_ratio_flag,
+                                   self.generate_introduction_flag, self.introduction_length)
+
         audio_duration = self.processor.load()
         self.processor.set_word_visibility_duration(self.word_visibility_duration)
 
@@ -380,6 +398,34 @@ class MainWindow(QDialog):
     def update_transition_keep_audio_status(self, is_checked):
 
         self.file_keep_audio_status['transition'] = is_checked
+
+    def update_play_beat_at_video_start_status(self, is_checked):
+
+        self.play_beat_at_video_start_flag = is_checked
+
+    def update_use_phone_aspect_ratio_status(self, is_checked):
+
+        self.use_phone_aspect_ratio_flag = is_checked
+
+    def update_generate_introduction_status(self, is_checked):
+
+        self.generate_introduction_flag = is_checked
+
+        self.introduction_length = -1
+
+        if self.generate_introduction_flag:
+
+            self.BeatDropAtLabel.setDisabled(False)
+            self.BeatDropAtLineEdit.setDisabled(False)
+            self.BeatDropAtLabel.setVisible(True)
+            self.BeatDropAtLineEdit.setVisible(True)
+
+        else:
+
+            self.BeatDropAtLabel.setDisabled(True)
+            self.BeatDropAtLineEdit.setDisabled(True)
+            self.BeatDropAtLabel.setVisible(False)
+            self.BeatDropAtLineEdit.setVisible(False)
 
 
 app = QApplication(sys.argv)
