@@ -1,4 +1,5 @@
-from moviepy.editor import VideoFileClip, TextClip, CompositeVideoClip
+from moviepy.editor import *
+from moviepy.video.fx.all import crop
 
 
 class VideoData:
@@ -18,16 +19,28 @@ class VideoData:
 
         self.file_path = file_path
 
-    def read(self, no_audio_flag=False):
+    def read(self, keep_audio_flag=False, crop_to_phone_aspect_ratio=True):
 
         if self.file_path is None:
             print('[VideoData ERROR] file path not or incorrectly specified.')
             return
 
-        if no_audio_flag:
+        if not keep_audio_flag:
             self.clip = VideoFileClip(self.file_path, target_resolution=(1080, 1920)).without_audio()
         else:
             self.clip = VideoFileClip(self.file_path, target_resolution=(1080, 1920))
+
+        if crop_to_phone_aspect_ratio:
+
+            (clip_width, clip_height) = self.clip.size
+
+            crop_width = clip_height * (9 / 16)
+
+            x1 = (clip_width - crop_width) // 2
+            x2 = (clip_width + crop_width) // 2
+
+            self.all_clips.append(self.clip)
+            self.clip = crop(self.clip, x1=x1, y1=0, x2=x2, y2=clip_height)
 
         if self.clip is None:
             print('[VideoData ERROR] clip could not be read.')
@@ -68,7 +81,8 @@ class VideoData:
 
         return self.clip
 
-    def add_text(self, text_list, position="center", duration=10, text_color="white", start_time=0, font_size=12):
+    def add_text(self, text_list, position="center", duration=10, text_color="white", start_time=0, font_size=12,
+                 change_end=True):
 
         if self.clip is None:
             print('[WARNING] clip not read.')
@@ -79,11 +93,12 @@ class VideoData:
 
             word_duration = duration
 
-            if word == text_list[-1]:
+            if change_end and word == text_list[-1]:
 
                 word_duration = self.clip.duration - start_time
 
-            clips_list.append(TextClip(word.upper(), fontsize=font_size, font='DejaVu-Sans', color=text_color)
+            clips_list.append(TextClip(word.upper(), fontsize=font_size, font='DejaVu-Sans',
+                                       color=text_color, method='caption', stroke_width=10)
                               .set_position(position)
                               .set_duration(word_duration)
                               .set_start('00:%02d:%02d.%05d' % (int(start_time/60.0), int((start_time % 60.0)/1),
@@ -120,3 +135,9 @@ class VideoData:
     def is_open(self):
 
         return self.clip is not None and len(self.all_clips) == 0
+
+    def add_audio(self, audio_clip):
+
+        self.all_clips.append(self.clip)
+
+        self.clip = self.clip.set_audio(audio_clip)
