@@ -86,6 +86,8 @@ class MainWindow(QDialog):
         self.RunCancelButton.clicked.connect(self.run_cancel_handler)
         self.RunCancelButton.setEnabled(False)
 
+        self.BeatDropAtLineEdit.textChanged.connect(self.beat_drop_at_line_edit_changed)
+
         self.play_beat_at_video_start_flag = False
         self.use_phone_aspect_ratio_flag = False
         self.generate_introduction_flag = False
@@ -104,11 +106,16 @@ class MainWindow(QDialog):
             self.BeatDropAtLabel.setVisible(True)
             self.BeatDropAtLineEdit.setVisible(True)
 
+        self.BackgroundKeepAudioCheckBox.setDisabled(True)
+        self.BackgroundKeepAudioCheckBox.setVisible(False)
+
         self.word_visibility_duration = 10
         self.processor = None
         self.random_word_count = 0
         self.font_size = 90
         self.introduction_length = 0
+
+        self.last_introduction_file_name = ''
 
         self.random_words = None
         self.random_words_generator = WordList()
@@ -134,12 +141,16 @@ class MainWindow(QDialog):
 
         self.config['introduction'] = self.file_dictionary['introduction']
 
+        self.set_load_and_run_button_status()
+
     def browse_background_file(self):
 
         self.file_dictionary['background'] = self.search_file()
         self.BackgroundLineEdit.setText(self.file_dictionary['background'])
 
         self.config['background'] = self.file_dictionary['background']
+
+        self.set_load_and_run_button_status()
 
         self.set_load_and_run_button_status()
 
@@ -150,12 +161,16 @@ class MainWindow(QDialog):
 
         self.config['outroduction'] = self.file_dictionary['outroduction']
 
+        self.set_load_and_run_button_status()
+
     def browse_transition_file(self):
 
         self.file_dictionary['transition'] = self.search_file()
         self.TransitionLineEdit.setText(self.file_dictionary['transition'])
 
         self.config['transition'] = self.file_dictionary['transition']
+
+        self.set_load_and_run_button_status()
 
     def browse_audio_file(self):
 
@@ -166,7 +181,11 @@ class MainWindow(QDialog):
 
         self.set_load_and_run_button_status()
 
+        self.set_load_and_run_button_status()
+
     def set_load_and_run_button_status(self):
+
+        self.RunCancelButton.setEnabled(False)
 
         if self.validate_input_files():
 
@@ -200,6 +219,10 @@ class MainWindow(QDialog):
 
         audio_duration = self.processor.load()
         self.processor.set_word_visibility_duration(self.word_visibility_duration)
+
+        if self.generate_introduction_flag:
+
+            audio_duration -= self.introduction_length
 
         self.random_word_count = int(audio_duration // self.word_visibility_duration)
 
@@ -294,6 +317,8 @@ class MainWindow(QDialog):
 
         self.config['word-duration'] = float(value)
 
+        self.set_load_and_run_button_status()
+
     def font_size_slider_changed(self, value):
 
         if self.processor is not None:
@@ -303,6 +328,8 @@ class MainWindow(QDialog):
         self.FontSizeLineEdit.setText(str(value))
 
         self.config['font-size'] = float(value)
+
+        self.set_load_and_run_button_status()
 
     def word_duration_line_edit_changed(self, value):
 
@@ -314,6 +341,8 @@ class MainWindow(QDialog):
         self.WordDurationHorizontalSlider.setValue(int(self.word_visibility_duration))
 
         self.config['word-duration'] = float(value)
+
+        self.set_load_and_run_button_status()
 
     def font_size_line_edit_changed(self, value):
 
@@ -330,6 +359,8 @@ class MainWindow(QDialog):
         self.FontSizeHorizontalSlider.setValue(value)
 
         self.config['font-size'] = float(value)
+
+        self.set_load_and_run_button_status()
 
     def read_last_configuration(self):
 
@@ -387,25 +418,37 @@ class MainWindow(QDialog):
 
         self.file_keep_audio_status['introduction'] = is_checked
 
+        self.set_load_and_run_button_status()
+
     def update_background_keep_audio_status(self, is_checked):
 
         self.file_keep_audio_status['background'] = is_checked
+
+        self.set_load_and_run_button_status()
 
     def update_outroduction_keep_audio_status(self, is_checked):
 
         self.file_keep_audio_status['outroduction'] = is_checked
 
+        self.set_load_and_run_button_status()
+
     def update_transition_keep_audio_status(self, is_checked):
 
         self.file_keep_audio_status['transition'] = is_checked
+
+        self.set_load_and_run_button_status()
 
     def update_play_beat_at_video_start_status(self, is_checked):
 
         self.play_beat_at_video_start_flag = is_checked
 
+        self.set_load_and_run_button_status()
+
     def update_use_phone_aspect_ratio_status(self, is_checked):
 
         self.use_phone_aspect_ratio_flag = is_checked
+
+        self.set_load_and_run_button_status()
 
     def update_generate_introduction_status(self, is_checked):
 
@@ -420,12 +463,42 @@ class MainWindow(QDialog):
             self.BeatDropAtLabel.setVisible(True)
             self.BeatDropAtLineEdit.setVisible(True)
 
+            if self.file_dictionary['introduction'] != self.file_dictionary['background']:
+
+                self.last_introduction_file_name = self.file_dictionary['introduction']
+
+            self.file_dictionary['introduction'] = self.file_dictionary['background']
+
+            self.PlayBeatAtVideoStartCheckBox.setChecked(True)
+            self.play_beat_at_video_start_flag = True
+
         else:
 
             self.BeatDropAtLabel.setDisabled(True)
             self.BeatDropAtLineEdit.setDisabled(True)
             self.BeatDropAtLabel.setVisible(False)
             self.BeatDropAtLineEdit.setVisible(False)
+
+            self.file_dictionary['introduction'] = self.last_introduction_file_name
+
+            self.PlayBeatAtVideoStartCheckBox.setChecked(False)
+            self.play_beat_at_video_start_flag = False
+
+        self.IntroductionLineEdit.setText(self.file_dictionary['introduction'])
+
+        self.set_load_and_run_button_status()
+
+    def beat_drop_at_line_edit_changed(self, value):
+
+        value = float(value)
+
+        if value <= 0:
+
+            return
+
+        self.introduction_length = value
+
+        self.set_load_and_run_button_status()
 
 
 app = QApplication(sys.argv)
