@@ -37,6 +37,7 @@ class MainWindow(QDialog):
             'background': r'',
             'outroduction': r'',
             'transition': r'',
+            'transition': r'',
             'audio': r'',
             'output': ''
         }
@@ -80,6 +81,10 @@ class MainWindow(QDialog):
         self.WordDurationLineEdit.textChanged.connect(self.word_duration_line_edit_changed)
         self.FontSizeLineEdit.textChanged.connect(self.font_size_line_edit_changed)
 
+        self.ShowRandomizedSuggestionsCheckBox.clicked.connect(self.update_show_randomized_suggestions_status)
+
+        self.WordListTextEdit.textChanged.connect(self.user_updated_word_list)
+
         self.LoadButton.clicked.connect(self.load_files)
         self.LoadButton.setEnabled(False)
 
@@ -91,6 +96,14 @@ class MainWindow(QDialog):
         self.play_beat_at_video_start_flag = False
         self.use_phone_aspect_ratio_flag = False
         self.generate_introduction_flag = False
+
+        self.ShowRandomizedSuggestionsCheckBox.setChecked(True)
+        self.word_list_randomization_flag = True
+
+        self.TotalWordsRequiredTextLabel.setVisible(False)
+        self.TotalWordsRequiredValueLabel.setVisible(False)
+        self.CurrentWordCountTextLabel.setVisible(False)
+        self.CurrentWordCountValueLabel.setVisible(False)
 
         self.BeatDropAtLabel.setDisabled(True)
         self.BeatDropAtLineEdit.setDisabled(True)
@@ -111,13 +124,23 @@ class MainWindow(QDialog):
 
         self.word_visibility_duration = 10
         self.processor = None
-        self.random_word_count = 0
+        self.word_count_required = 0
         self.font_size = 90
         self.introduction_length = 0
+        self.show_randomized_suggestions_flag = True
+        self.current_word_count = 0
 
         self.last_introduction_file_name = ''
 
-        self.random_words = None
+        self.prior_file_keep_audio_status = {
+
+            'introduction': False,
+            'outroduction': False,
+            'transition': False
+
+        }
+
+        self.words = None
         self.random_words_generator = WordList()
 
         self.runner_thread = None
@@ -150,7 +173,10 @@ class MainWindow(QDialog):
 
         self.config['background'] = self.file_dictionary['background']
 
-        self.set_load_and_run_button_status()
+        if self.generate_introduction_flag:
+
+            self.file_dictionary['introduction'] = self.file_dictionary['background']
+            self.config['introduction'] = self.file_dictionary['introduction']
 
         self.set_load_and_run_button_status()
 
@@ -181,8 +207,6 @@ class MainWindow(QDialog):
 
         self.set_load_and_run_button_status()
 
-        self.set_load_and_run_button_status()
-
     def set_load_and_run_button_status(self):
 
         self.RunCancelButton.setEnabled(False)
@@ -207,6 +231,11 @@ class MainWindow(QDialog):
 
             return False
 
+        if not self.show_randomized_suggestions_flag and self.word_count_required != -1 and\
+                self.current_word_count != self.word_count_required:
+
+            return False
+
         return self.file_dictionary['background'] != '' and self.file_dictionary['audio'] != ''
 
     def load_files(self):
@@ -217,6 +246,8 @@ class MainWindow(QDialog):
                                    self.play_beat_at_video_start_flag, self.use_phone_aspect_ratio_flag,
                                    self.generate_introduction_flag, self.introduction_length)
 
+        self.processor.set_font_size(self.font_size)
+
         audio_duration = self.processor.load()
         self.processor.set_word_visibility_duration(self.word_visibility_duration)
 
@@ -224,19 +255,27 @@ class MainWindow(QDialog):
 
             audio_duration -= self.introduction_length
 
-        self.random_word_count = int(audio_duration // self.word_visibility_duration)
+        self.word_count_required = int(audio_duration // self.word_visibility_duration)
 
-        self.random_words = self.random_words_generator.get_random_words(self.random_word_count)
+        if self.show_randomized_suggestions_flag:
 
-        self.display_random_words()
+            self.words = self.random_words_generator.get_random_words(self.word_count_required)
+            self.display_random_words()
 
-        self.RunCancelButton.setEnabled(True)
+        else:
+
+            self.update_word_requirement_labels()
+
+        if self.show_randomized_suggestions_flag or (not self.show_randomized_suggestions_flag and
+                                                     self.word_count_required == self.current_word_count):
+
+            self.RunCancelButton.setEnabled(True)
 
     def display_random_words(self):
 
         self.WordListTextEdit.clear()
 
-        for word in self.random_words:
+        for word in self.words:
 
             self.WordListTextEdit.append(word)
 
@@ -261,7 +300,7 @@ class MainWindow(QDialog):
 
         self.read_word_list()
 
-        self.processor.set_word_list(self.random_words)
+        self.processor.set_word_list(self.words)
 
         self.LoadButton.setEnabled(False)
 
@@ -299,15 +338,22 @@ class MainWindow(QDialog):
     def read_word_list(self):
 
         text = self.WordListTextEdit.toPlainText()
-        self.random_words = text.split('\n')
+        self.words = text.split('\n')
         self.sanitize_random_words_list()
+
+        self.current_word_count = len(self.words)
 
     def sanitize_random_words_list(self):
         
-        while len(self.random_words) > self.random_word_count:
-            self.random_words.pop()
+        while len(self.words) > self.word_count_required:
+            self.words.pop()
 
-        for word in self.random_words:
+        for i, word in enumerate(self.words):
+
+            if len(word) == 0:
+
+                self.words.pop(i)
+
             word.strip()
 
     def word_duration_slider_changed(self, value):
@@ -378,7 +424,15 @@ class MainWindow(QDialog):
                            'transition': '',
                            'audio': '',
                            'word-duration': 10.0,
-                           'font-size': 90.0}
+                           'font-size': 90.0,
+                           'introduction-keep-audio': False,
+                           'outroduction-keep-audio': False,
+                           'transition-keep-audio': False,
+                           'play-beat-at-video-start': False,
+                           'use-phone-aspect-ratio': False,
+                           'generate-introduction': False,
+                           'keep-audio-visibility': True,
+                           'show-randomized-suggestions': True}
 
         file.close()
 
@@ -410,49 +464,89 @@ class MainWindow(QDialog):
 
         self.word_visibility_duration = self.config['word-duration']
 
-        if self.processor is not None:
+        self.font_size = int(self.config['font-size'])
 
-            self.processor.set_font_size(int(self.config['font-size']))
+        self.play_beat_at_video_start_flag = self.config['play-beat-at-video-start']
+        self.use_phone_aspect_ratio_flag = self.config['use-phone-aspect-ratio']
+        self.generate_introduction_flag = self.config['generate-introduction']
+
+        self.file_keep_audio_status['introduction'] = self.config['introduction-keep-audio']
+        self.file_keep_audio_status['outroduction'] = self.config['outroduction-keep-audio']
+        self.file_keep_audio_status['transition'] = self.config['transition-keep-audio']
+
+        self.PlayBeatAtVideoStartCheckBox.setChecked(self.play_beat_at_video_start_flag)
+        self.UsePhoneAspectRatioCheckBox.setChecked(self.use_phone_aspect_ratio_flag)
+        self.GenerateIntroductionCheckBox.setChecked(self.generate_introduction_flag)
+
+        self.IntroductionKeepAudioCheckBox.setChecked(self.file_keep_audio_status['introduction'])
+        self.OutroductionKeepAudioCheckBox.setChecked(self.file_keep_audio_status['outroduction'])
+        self.TransitionKeepAudioCheckBox.setChecked(self.file_keep_audio_status['transition'])
+
+        self.IntroductionKeepAudioCheckBox.setVisible(self.config['keep-audio-visibility'])
+        self.OutroductionKeepAudioCheckBox.setVisible(self.config['keep-audio-visibility'])
+        self.TransitionKeepAudioCheckBox.setVisible(self.config['keep-audio-visibility'])
+
+        self.show_randomized_suggestions_flag = self.config['show-randomized-suggestions']
+
+        self.ShowRandomizedSuggestionsCheckBox.setChecked(self.show_randomized_suggestions_flag)
+
+        self.TotalWordsRequiredTextLabel.setVisible(not self.show_randomized_suggestions_flag)
+        self.TotalWordsRequiredValueLabel.setVisible(not self.show_randomized_suggestions_flag)
+
+        self.CurrentWordCountTextLabel.setVisible(not self.show_randomized_suggestions_flag)
+        self.CurrentWordCountValueLabel.setVisible(not self.show_randomized_suggestions_flag)
 
     def update_introduction_keep_audio_status(self, is_checked):
 
         self.file_keep_audio_status['introduction'] = is_checked
+        self.config['introduction-keep-audio'] = is_checked
 
         self.set_load_and_run_button_status()
 
     def update_background_keep_audio_status(self, is_checked):
 
         self.file_keep_audio_status['background'] = is_checked
+        self.config['background-keep-audio'] = is_checked
 
         self.set_load_and_run_button_status()
 
     def update_outroduction_keep_audio_status(self, is_checked):
 
         self.file_keep_audio_status['outroduction'] = is_checked
+        self.config['outroduction-keep-audio'] = is_checked
 
         self.set_load_and_run_button_status()
 
     def update_transition_keep_audio_status(self, is_checked):
 
         self.file_keep_audio_status['transition'] = is_checked
+        self.config['transition-keep-audio'] = is_checked
 
         self.set_load_and_run_button_status()
 
     def update_play_beat_at_video_start_status(self, is_checked):
 
+        if self.generate_introduction_flag:
+
+            self.PlayBeatAtVideoStartCheckBox.setChecked(True)
+            return
+
         self.play_beat_at_video_start_flag = is_checked
+        self.config['play-beat-at-video-start'] = is_checked
 
         self.set_load_and_run_button_status()
 
     def update_use_phone_aspect_ratio_status(self, is_checked):
 
         self.use_phone_aspect_ratio_flag = is_checked
+        self.config['use-phone-aspect-ratio'] = is_checked
 
         self.set_load_and_run_button_status()
 
     def update_generate_introduction_status(self, is_checked):
 
         self.generate_introduction_flag = is_checked
+        self.config['generate-introduction'] = is_checked
 
         self.introduction_length = -1
 
@@ -467,7 +561,18 @@ class MainWindow(QDialog):
 
                 self.last_introduction_file_name = self.file_dictionary['introduction']
 
+                for file_type in ['introduction', 'outroduction', 'transition']:
+
+                    self.prior_file_keep_audio_status[file_type] = self.file_keep_audio_status[file_type]
+                    self.file_keep_audio_status[file_type] = False
+
+            self.config['keep-audio-visibility'] = False
+
             self.file_dictionary['introduction'] = self.file_dictionary['background']
+
+            self.IntroductionKeepAudioCheckBox.setVisible(False)
+            self.OutroductionKeepAudioCheckBox.setVisible(False)
+            self.TransitionKeepAudioCheckBox.setVisible(False)
 
             self.PlayBeatAtVideoStartCheckBox.setChecked(True)
             self.play_beat_at_video_start_flag = True
@@ -481,6 +586,20 @@ class MainWindow(QDialog):
 
             self.file_dictionary['introduction'] = self.last_introduction_file_name
 
+            self.IntroductionKeepAudioCheckBox.setVisible(True)
+            self.OutroductionKeepAudioCheckBox.setVisible(True)
+            self.TransitionKeepAudioCheckBox.setVisible(True)
+
+            self.IntroductionKeepAudioCheckBox.setChecked(self.prior_file_keep_audio_status['introduction'])
+            self.OutroductionKeepAudioCheckBox.setChecked(self.prior_file_keep_audio_status['outroduction'])
+            self.TransitionKeepAudioCheckBox.setChecked(self.prior_file_keep_audio_status['transition'])
+
+            for file_type in ['introduction', 'outroduction', 'transition']:
+
+                self.file_keep_audio_status[file_type] = self.prior_file_keep_audio_status[file_type]
+
+            self.config['keep-audio-visibility'] = True
+
             self.PlayBeatAtVideoStartCheckBox.setChecked(False)
             self.play_beat_at_video_start_flag = False
 
@@ -492,13 +611,57 @@ class MainWindow(QDialog):
 
         value = float(value)
 
-        if value <= 0:
+        if value < 5:
 
             return
 
         self.introduction_length = value
 
         self.set_load_and_run_button_status()
+
+    def update_show_randomized_suggestions_status(self, is_checked):
+
+        self.show_randomized_suggestions_flag = is_checked
+
+        if self.show_randomized_suggestions_flag:
+
+            self.TotalWordsRequiredTextLabel.setVisible(False)
+            self.TotalWordsRequiredValueLabel.setVisible(False)
+
+            self.CurrentWordCountTextLabel.setVisible(False)
+            self.CurrentWordCountValueLabel.setVisible(False)
+
+        else:
+
+            self.TotalWordsRequiredTextLabel.setVisible(True)
+            self.TotalWordsRequiredValueLabel.setVisible(True)
+
+            self.CurrentWordCountTextLabel.setVisible(True)
+            self.CurrentWordCountValueLabel.setVisible(True)
+
+            self.update_word_requirement_labels()
+
+        self.set_load_and_run_button_status()
+
+    def user_updated_word_list(self):
+
+        if self.show_randomized_suggestions_flag:
+
+            return
+
+        self.update_word_requirement_labels()
+
+        self.set_load_and_run_button_status()
+
+    def update_word_requirement_labels(self):
+
+        self.read_word_list()
+
+        total_words_required_value = self.word_count_required
+        current_word_count_value = self.current_word_count
+
+        self.TotalWordsRequiredValueLabel.setText(str(total_words_required_value))
+        self.CurrentWordCountValueLabel.setText(str(current_word_count_value))
 
 
 app = QApplication(sys.argv)
