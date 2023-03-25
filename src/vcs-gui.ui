@@ -19,7 +19,7 @@
   <widget class="QPushButton" name="RunCancelButton">
    <property name="geometry">
     <rect>
-     <x>680</x>
+     <x>670</x>
      <y>690</y>
      <width>89</width>
      <height>25</height>
@@ -33,7 +33,7 @@
    <property name="geometry">
     <rect>
      <x>550</x>
-     <y>750</y>
+     <y>740</y>
      <width>211</width>
      <height>23</height>
     </rect>
@@ -76,7 +76,7 @@
       <item>
        <widget class="QLabel" name="label_7">
         <property name="text">
-         <string>&lt;strong&gt;Word Duration&lt;/strong&gt; &lt;italic&gt;(sec)&lt;/italic&gt;</string>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Word Duration&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
        </widget>
       </item>
@@ -98,6 +98,19 @@
        </layout>
       </item>
      </layout>
+    </item>
+    <item row="0" column="1">
+     <spacer name="horizontalSpacer">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>40</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
     </item>
     <item row="0" column="2">
      <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -132,19 +145,6 @@
        </layout>
       </item>
      </layout>
-    </item>
-    <item row="0" column="1">
-     <spacer name="horizontalSpacer">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>40</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
     </item>
    </layout>
   </widget>
@@ -279,28 +279,6 @@
     </item>
    </layout>
   </widget>
-  <widget class="QWidget" name="layoutWidget">
-   <property name="geometry">
-    <rect>
-     <x>50</x>
-     <y>430</y>
-     <width>481</width>
-     <height>391</height>
-    </rect>
-   </property>
-   <layout class="QHBoxLayout" name="horizontalLayout_3">
-    <item>
-     <widget class="QLabel" name="label_6">
-      <property name="text">
-       <string>&lt;strong&gt;Word Suggestions</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QTextEdit" name="WordListTextEdit"/>
-    </item>
-   </layout>
-  </widget>
   <widget class="Line" name="line_2">
    <property name="geometry">
     <rect>
@@ -318,9 +296,9 @@
    <property name="geometry">
     <rect>
      <x>550</x>
-     <y>450</y>
+     <y>480</y>
      <width>220</width>
-     <height>171</height>
+     <height>161</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -471,6 +449,95 @@
          <bool>false</bool>
         </property>
        </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>420</y>
+     <width>471</width>
+     <height>411</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout_9">
+    <item>
+     <layout class="QVBoxLayout" name="verticalLayout_5">
+      <item>
+       <widget class="QLabel" name="label_6">
+        <property name="text">
+         <string>&lt;strong&gt;Word List</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="ShowRandomizedSuggestionsCheckBox">
+        <property name="text">
+         <string>Show Randomized Suggestions on Load</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QVBoxLayout" name="verticalLayout_8">
+      <item>
+       <widget class="QTextEdit" name="WordListTextEdit"/>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_7">
+          <item>
+           <widget class="QLabel" name="TotalWordsRequiredTextLabel">
+            <property name="text">
+             <string>Total Words Required</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="TotalWordsRequiredValueLabel">
+            <property name="text">
+             <string>0</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_6">
+          <item>
+           <widget class="QLabel" name="CurrentWordCountTextLabel">
+            <property name="text">
+             <string>Current Word Count</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="CurrentWordCountValueLabel">
+            <property name="text">
+             <string>0</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
       </item>
      </layout>
     </item>
