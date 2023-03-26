@@ -13,6 +13,9 @@ from sys import platform
 from AVBuilder import AVBuilder
 from WordList import WordList
 
+from multiprocessing.pool import ThreadPool
+from Task import Task
+
 
 def threaded(fn):
 
@@ -111,6 +114,8 @@ class MainWindow(QDialog):
         self.BeatDropAtLabel.setVisible(False)
         self.BeatDropAtLineEdit.setVisible(False)
 
+        self.task = None
+
         if self.generate_introduction_flag:
 
             self.BeatDropAtLabel.setDisabled(False)
@@ -145,6 +150,8 @@ class MainWindow(QDialog):
 
         self.runner_thread = None
         self.runner_thread_stop = False
+
+        self.thread_pool = ThreadPool(16)
 
         self.ProgressBar.setAlignment(Qt.AlignCenter)
 
@@ -283,57 +290,42 @@ class MainWindow(QDialog):
 
         if self.RunCancelButton.text() == 'Run':
 
-            self.runner_thread = self.run()
+            # self.runner_thread = self.run()
+
+            self.read_word_list()
+            self.processor.set_word_list(self.words)
+
+            self.write_current_configuration()
+
+            self.task = Task(self.processor)
+            self.task.updated.connect(self.run)
+
+            self.thread_pool.apply_async(self.task.video_processing_task)
             self.RunCancelButton.setText('Cancel')
 
         else:
 
-            if self.runner_thread is not None:
+            # if self.runner_thread is not None:
+            #
+            #     self.runner_thread_stop = True
 
-                self.runner_thread_stop = True
+            if self.task is not None:
+
+                self.task.kill_thread = True
 
             self.RunCancelButton.setText('Run')
             self.RunCancelButton.setEnabled(False)
 
-    @threaded
-    def run(self):
+    def run(self, load_button_enabled_flag, run_button_enabled_flag, change_text_to_run_flag, progress_bar_value):
 
-        self.read_word_list()
+        self.LoadButton.setEnabled(load_button_enabled_flag)
+        self.RunCancelButton.setEnabled(run_button_enabled_flag)
 
-        self.processor.set_word_list(self.words)
+        if change_text_to_run_flag:
 
-        self.LoadButton.setEnabled(False)
+            self.RunCancelButton.setText('Run')
 
-        self.write_current_configuration()
-
-        self.processor.start()
-
-        completed = 0
-
-        while self.processor.is_alive():
-
-            if self.runner_thread_stop:
-
-                self.processor.stop()
-                self.processor = None
-                break
-
-            self.ProgressBar.setValue(int(completed))
-            time.sleep(1)
-
-            if completed < 99:
-
-                completed += 0.083
-
-        self.runner_thread_stop = False
-        self.processor = None
-        self.runner_thread = None
-
-        self.ProgressBar.setValue(100)
-
-        self.RunCancelButton.setText('Run')
-        self.RunCancelButton.setEnabled(False)
-        self.LoadButton.setEnabled(True)
+        self.ProgressBar.setValue(progress_bar_value)
 
     def read_word_list(self):
 
@@ -438,6 +430,12 @@ class MainWindow(QDialog):
 
     def write_current_configuration(self):
 
+        self.config['introduction'] = self.file_dictionary['introduction']
+        self.config['background'] = self.file_dictionary['background']
+        self.config['outroduction'] = self.file_dictionary['outroduction']
+        self.config['audio'] = self.file_dictionary['audio']
+        self.config['transition'] = self.file_dictionary['transition']
+
         file = open(self.config_file_path, 'wb')
         pickle.dump(self.config, file)
         file.close()
@@ -469,6 +467,14 @@ class MainWindow(QDialog):
         self.play_beat_at_video_start_flag = self.config['play-beat-at-video-start']
         self.use_phone_aspect_ratio_flag = self.config['use-phone-aspect-ratio']
         self.generate_introduction_flag = self.config['generate-introduction']
+
+        if self.generate_introduction_flag:
+
+            self.BeatDropAtLabel.setVisible(True)
+            self.BeatDropAtLineEdit.setVisible(True)
+
+            self.BeatDropAtLabel.setDisabled(False)
+            self.BeatDropAtLineEdit.setDisabled(False)
 
         self.file_keep_audio_status['introduction'] = self.config['introduction-keep-audio']
         self.file_keep_audio_status['outroduction'] = self.config['outroduction-keep-audio']
@@ -547,6 +553,7 @@ class MainWindow(QDialog):
 
         self.generate_introduction_flag = is_checked
         self.config['generate-introduction'] = is_checked
+        self.config['play-beat-at-video-start'] = is_checked
 
         self.introduction_length = -1
 
