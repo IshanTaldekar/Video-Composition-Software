@@ -17,17 +17,6 @@ from multiprocessing.pool import ThreadPool
 from Task import Task
 
 
-def threaded(fn):
-
-    def wrapper(*args, **kwargs):
-
-        thread = threading.Thread(target=fn, args=args, kwargs=kwargs)
-        thread.start()
-        return thread
-
-    return wrapper
-
-
 class MainWindow(QDialog):
 
     def __init__(self):
