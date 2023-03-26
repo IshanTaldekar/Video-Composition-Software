@@ -172,3 +172,7 @@ class AVBuilder (Thread):
             if component.is_open():
 
                 component.close()
+
+    def set_output_file(self, url):
+
+        self.file_paths_dictionary['output'] = url

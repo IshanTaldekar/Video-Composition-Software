@@ -153,6 +153,16 @@ class MainWindow(QDialog):
 
             self.LoadButton.setEnabled(True)
 
+        if self.current_word_count != self.word_count_required:
+
+            self.TotalWordsRequiredValueLabel.setStyleSheet('color: red')
+            self.CurrentWordCountValueLabel.setStyleSheet('color: black')
+
+        else:
+
+            self.TotalWordsRequiredValueLabel.setStyleSheet('color: green')
+            self.TotalWordsRequiredValueLabel.setStyleSheet('color: green')
+
     def browse_introduction_file(self):
 
         self.file_dictionary['introduction'] = self.search_file()
@@ -221,6 +231,21 @@ class MainWindow(QDialog):
         file_name = QFileDialog.getOpenFileName(self, 'Open File', '~/')
         return file_name[0]
 
+    def search_save_as_file(self):
+
+        output_file_name = QFileDialog.getSaveFileUrl(parent=self, caption='Save As',
+                                                      filter='*.mpeg')[0].path()
+
+        if len(output_file_name) == 0:
+
+            return output_file_name
+
+        if output_file_name[-4:] != '.mp4':
+
+            output_file_name = output_file_name + '.mp4'
+
+        return output_file_name
+
     def validate_input_files(self):
 
         if self.generate_introduction_flag and self.introduction_length == -1:
@@ -279,10 +304,16 @@ class MainWindow(QDialog):
 
         if self.RunCancelButton.text() == 'Run':
 
-            # self.runner_thread = self.run()
-
             self.read_word_list()
             self.processor.set_word_list(self.words)
+
+            output_path = self.search_save_as_file()
+
+            if len(output_path) == 0:
+
+                return
+
+            self.processor.set_output_file(output_path)
 
             self.write_current_configuration()
 
@@ -293,10 +324,6 @@ class MainWindow(QDialog):
             self.RunCancelButton.setText('Cancel')
 
         else:
-
-            # if self.runner_thread is not None:
-            #
-            #     self.runner_thread_stop = True
 
             if self.task is not None:
 
@@ -323,6 +350,16 @@ class MainWindow(QDialog):
         self.sanitize_random_words_list()
 
         self.current_word_count = len(self.words)
+
+        if self.current_word_count != self.word_count_required:
+
+            self.TotalWordsRequiredValueLabel.setStyleSheet('color: red')
+            self.CurrentWordCountValueLabel.setStyleSheet('color: black')
+
+        else:
+
+            self.TotalWordsRequiredValueLabel.setStyleSheet('color: green')
+            self.CurrentWordCountValueLabel.setStyleSheet('color: green')
 
     def sanitize_random_words_list(self):
         
