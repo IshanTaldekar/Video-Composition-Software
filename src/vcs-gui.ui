@@ -76,7 +76,7 @@
       <item>
        <widget class="QLabel" name="label_7">
         <property name="text">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Word Duration&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Word Duration&lt;/span&gt; (sec)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
        </widget>
       </item>
@@ -297,7 +297,7 @@
     <rect>
      <x>550</x>
      <y>480</y>
-     <width>220</width>
+     <width>223</width>
      <height>161</height>
     </rect>
    </property>
@@ -439,7 +439,7 @@
          <bool>false</bool>
         </property>
         <property name="text">
-         <string>Beat drop at (sec)</string>
+         <string>&lt;strong&gt;Beat Drop&lt;/strong&gt; (sec)</string>
         </property>
        </widget>
       </item>
@@ -454,13 +454,13 @@
     </item>
    </layout>
   </widget>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>50</x>
      <y>420</y>
      <width>471</width>
-     <height>411</height>
+     <height>391</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -494,7 +494,7 @@
           <item>
            <widget class="QLabel" name="TotalWordsRequiredTextLabel">
             <property name="text">
-             <string>Total Words Required</string>
+             <string>&lt;strong&gt;Total Words Required</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
@@ -518,7 +518,7 @@
           <item>
            <widget class="QLabel" name="CurrentWordCountTextLabel">
             <property name="text">
-             <string>Current Word Count</string>
+             <string>&lt;strong&gt;Current Word Count</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
@@ -542,6 +542,19 @@
      </layout>
     </item>
    </layout>
+  </widget>
+  <widget class="Line" name="line">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>390</y>
+     <width>701</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
   </widget>
  </widget>
  <resources/>
