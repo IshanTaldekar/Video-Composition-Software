@@ -234,7 +234,7 @@ class MainWindow(QDialog):
     def search_save_as_file(self):
 
         output_file_name = QFileDialog.getSaveFileUrl(parent=self, caption='Save As',
-                                                      filter='*.mpeg')[0].path()
+                                                      filter='*.mp4')[0].path()
 
         if len(output_file_name) == 0:
 
