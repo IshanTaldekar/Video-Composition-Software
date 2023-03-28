@@ -6,6 +6,7 @@ import pickle
 
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QDialog, QApplication, QFileDialog
+from PyQt5.QtCore import QDir
 from PyQt5.uic import loadUi
 from PyQt5.QtCore import Qt
 from sys import platform
@@ -233,18 +234,20 @@ class MainWindow(QDialog):
 
     def search_save_as_file(self):
 
-        output_file_name = QFileDialog.getSaveFileUrl(parent=self, caption='Save As',
+        output_file_path = QFileDialog.getSaveFileUrl(parent=self, caption='Save As',
                                                       filter='*.mp4')[0].path()
 
-        if len(output_file_name) == 0:
+        if len(output_file_path) == 0:
 
-            return output_file_name
+            return output_file_path
 
-        if output_file_name[-4:] != '.mp4':
+        if output_file_path[-4:] != '.mp4':
 
-            output_file_name = output_file_name + '.mp4'
+            output_file_path = output_file_path + '.mp4'
 
-        return output_file_name
+        output_file_path = QDir.toNativeSeparators(output_file_path)
+
+        return output_file_path
 
     def validate_input_files(self):
 
