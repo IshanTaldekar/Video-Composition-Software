@@ -245,7 +245,7 @@ class MainWindow(QDialog):
 
             output_file_path = output_file_path + '.mp4'
 
-        output_file_path = QDir.toNativeSeparators(output_file_path)[2:]
+        output_file_path = QDir.toNativeSeparators(output_file_path)[1:]
 
         return output_file_path
 
