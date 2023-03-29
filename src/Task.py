@@ -27,7 +27,7 @@ class Task (QtCore.QObject):
                 self.processor_thread.stop()
                 break
 
-            self.updated.emit(False, True, False, completed)
+            self.updated.emit(False, True, False, int(completed))
             time.sleep(1)
 
             if completed < 99:
