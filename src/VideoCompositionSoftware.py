@@ -6,7 +6,7 @@ import pickle
 
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QDialog, QApplication, QFileDialog
-from PyQt5.QtCore import QDir
+from PyQt5.QtCore import QDir, pyqtSlot
 from PyQt5.uic import loadUi
 from PyQt5.QtCore import Qt
 from sys import platform
@@ -245,7 +245,11 @@ class MainWindow(QDialog):
 
             output_file_path = output_file_path + '.mp4'
 
-        output_file_path = QDir.toNativeSeparators(output_file_path)[1:]
+        output_file_path = QDir.toNativeSeparators(output_file_path)
+
+        if platform == 'win32' or platform == 'cygwin':
+
+            output_file_path = output_file_path[1:]
 
         return output_file_path
 
@@ -322,8 +326,8 @@ class MainWindow(QDialog):
 
             self.task = Task(self.processor)
             self.task.updated.connect(self.run)
-
             self.thread_pool.apply_async(self.task.video_processing_task)
+
             self.RunCancelButton.setText('Cancel')
 
         else:
@@ -335,6 +339,7 @@ class MainWindow(QDialog):
             self.RunCancelButton.setText('Run')
             self.RunCancelButton.setEnabled(False)
 
+    @pyqtSlot(bool, bool, bool, int)
     def run(self, load_button_enabled_flag, run_button_enabled_flag, change_text_to_run_flag, progress_bar_value):
 
         self.LoadButton.setEnabled(load_button_enabled_flag)
