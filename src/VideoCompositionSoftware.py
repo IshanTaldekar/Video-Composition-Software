@@ -53,6 +53,8 @@ class MainWindow(QDialog):
             self.file_dictionary['output'] = os.path.join(os.path.join(os.path.expanduser('~')), 'Desktop') + '/output.mp4'
             self.config_file_path = os.getcwd() + '/config.p'
 
+        self.setWindowTitle('Video Composition Software')
+
         self.IntroductionBrowseButton.clicked.connect(self.browse_introduction_file)
         self.BackgroundBrowseButton.clicked.connect(self.browse_background_file)
         self.OutroductionBrowseButton.clicked.connect(self.browse_outroduction_file)
