@@ -54,7 +54,7 @@ Start the application using:
 
 The following window should open:
 
-![GUI Image](img/App-Fresh.png)
+![GUI Image](img/App-Fresh.PNG)
 
 The following few bullet points provide further context about the various fields and options available to the user:
 
@@ -69,7 +69,7 @@ The following few bullet points provide further context about the various fields
 
 When the **Generate Introduction** checkbox is clicked, the **Beat Drop** text edit will become visible, and a value must be entered inorder to load media.
 
-![Generate Introduction GUI](img/App-Generate-Introduction.png)
+![Generate Introduction GUI](img/App-Generate-Introduction.PNG)
 
 Finally, when the **Show Randomized Suggestions on Load** checkbox is unchecked, the total number of words required (based on the word duration) and the current word count specified will become visible. The media can only be loaded after the required
 number of words have been specified.
