@@ -21,7 +21,7 @@
     <rect>
      <x>670</x>
      <y>690</y>
-     <width>89</width>
+     <width>91</width>
      <height>25</height>
     </rect>
    </property>
@@ -297,7 +297,7 @@
     <rect>
      <x>550</x>
      <y>480</y>
-     <width>223</width>
+     <width>211</width>
      <height>161</height>
     </rect>
    </property>
@@ -307,7 +307,7 @@
       <item>
        <widget class="QCheckBox" name="PlayBeatAtVideoStartCheckBox">
         <property name="text">
-         <string>Play beat at video start</string>
+         <string>Play Beat at Video Start</string>
         </property>
        </widget>
       </item>
@@ -327,7 +327,7 @@
       <item>
        <widget class="QCheckBox" name="UsePhoneAspectRatioCheckBox">
         <property name="text">
-         <string>Use phone aspect ratio</string>
+         <string>Use Phone Aspect Ratio</string>
         </property>
        </widget>
       </item>
@@ -347,7 +347,7 @@
       <item>
        <widget class="QCheckBox" name="GenerateIntroductionCheckBox">
         <property name="text">
-         <string>Generate introduction</string>
+         <string>Generate Introduction</string>
         </property>
        </widget>
       </item>
