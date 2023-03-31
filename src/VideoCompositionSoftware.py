@@ -323,13 +323,13 @@ class MainWindow(QDialog):
             self.read_word_list()
             self.processor.set_word_list(self.words)
 
-            # output_path = self.search_save_as_file()
-            #
-            # if len(output_path) == 0:
-            #
-            #     return
-            #
-            # self.processor.set_output_file(output_path)
+            output_path = self.search_save_as_file()
+
+            if len(output_path) == 0:
+
+                return
+
+            self.processor.set_output_file(output_path)
 
             self.write_current_configuration()
 
