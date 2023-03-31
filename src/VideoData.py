@@ -115,7 +115,7 @@ class VideoData:
             print('[VideoData ERROR] No clip available.')
             return
 
-        self.clip.write_videofile(self.file_path, fps=30, threads=8, codec='mpeg4',  bitrate='500000k', verbose=False,
+        self.clip.write_videofile(self.file_path, fps=30, threads=8, codec='libx264',  bitrate='500000k', verbose=False,
                                   logger=None)
 
     def close(self):
