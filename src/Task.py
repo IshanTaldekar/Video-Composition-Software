@@ -18,7 +18,6 @@ class Task (QtCore.QObject):
         completed = 0
 
         self.updated.emit(False, True, False, completed)
-        self.processor_thread.start()
 
         while self.processor_thread.is_alive():
 
