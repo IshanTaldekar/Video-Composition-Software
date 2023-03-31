@@ -28,9 +28,9 @@ class Task (QtCore.QObject):
                 break
 
             self.updated.emit(False, True, False, int(completed))
-            time.sleep(1)
+            time.sleep(0.10)
 
             if completed < 99:
-                completed += 0.083
+                completed += 0.009
 
         self.updated.emit(True, False, True, 100)
