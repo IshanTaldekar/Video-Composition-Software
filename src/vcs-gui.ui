@@ -21,7 +21,7 @@
     <rect>
      <x>670</x>
      <y>690</y>
-     <width>91</width>
+     <width>89</width>
      <height>25</height>
     </rect>
    </property>
@@ -35,7 +35,7 @@
      <x>550</x>
      <y>740</y>
      <width>211</width>
-     <height>23</height>
+     <height>21</height>
     </rect>
    </property>
    <property name="styleSheet">
