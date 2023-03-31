@@ -247,7 +247,7 @@ class MainWindow(QDialog):
 
             output_file_path = output_file_path + '.mp4'
 
-        output_file_path = QDir.toNativeSeparators(output_file_path)
+        # output_file_path = QDir.toNativeSeparators(output_file_path)
 
         if platform == 'win32' or platform == 'cygwin':
 
@@ -257,9 +257,16 @@ class MainWindow(QDialog):
 
     def validate_input_files(self):
 
-        if self.generate_introduction_flag and self.introduction_length == -1:
+        if self.generate_introduction_flag:
 
-            return False
+            if self.introduction_length == -1:
+
+                self.BeatDropAtLabel.setStyleSheet('color: red')
+                return False
+
+            else:
+
+                self.BeatDropAtLabel.setStyleSheet('color: black')
 
         if not self.show_randomized_suggestions_flag and self.word_count_required != -1 and\
                 self.current_word_count != self.word_count_required:
@@ -316,18 +323,20 @@ class MainWindow(QDialog):
             self.read_word_list()
             self.processor.set_word_list(self.words)
 
-            output_path = self.search_save_as_file()
-
-            if len(output_path) == 0:
-
-                return
-
-            self.processor.set_output_file(output_path)
+            # output_path = self.search_save_as_file()
+            #
+            # if len(output_path) == 0:
+            #
+            #     return
+            #
+            # self.processor.set_output_file(output_path)
 
             self.write_current_configuration()
 
             self.task = Task(self.processor)
             self.task.updated.connect(self.run)
+
+            self.processor.start()
             self.thread_pool.apply_async(self.task.video_processing_task)
 
             self.RunCancelButton.setText('Cancel')
