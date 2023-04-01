@@ -395,7 +395,16 @@ class MainWindow(QDialog):
 
     def word_duration_slider_changed(self, value):
 
+        try:
+
+            value = float(value)
+
+        except ValueError:
+
+            value = self.word_visibility_duration
+
         self.word_visibility_duration = value
+
         self.WordDurationLineEdit.setText(str(value))
 
         self.config['word-duration'] = float(value)
@@ -407,6 +416,16 @@ class MainWindow(QDialog):
         if self.processor is not None:
 
             self.processor.set_font_size(value)
+
+        try:
+
+            value = float(value)
+
+        except ValueError:
+
+            value = self.font_size
+
+        self.font_size = value
 
         self.FontSizeLineEdit.setText(str(value))
 
@@ -433,7 +452,15 @@ class MainWindow(QDialog):
 
             return
 
-        value = int(float(value))
+        try:
+
+            value = int(float(value))
+
+        except ValueError:
+
+            value = self.font_size
+
+        self.font_size = value
 
         if self.processor is not None:
 
@@ -661,7 +688,13 @@ class MainWindow(QDialog):
 
     def beat_drop_at_line_edit_changed(self, value):
 
-        value = float(value)
+        try:
+
+            value = float(value)
+
+        except ValueError:
+
+            value = -1
 
         if value < 5:
 
