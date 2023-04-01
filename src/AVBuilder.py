@@ -108,15 +108,11 @@ class AVBuilder (Thread):
 
         self.media_data['introduction'].loop(loop_duration)
 
-        call_to_action_duration = ((loop_duration - 3) / 2) - 0.5
+        call_to_action_duration = ((loop_duration - 3) / 2)
 
-        self.media_data['introduction'].add_text(['FREESTYLE RAP IMPROV PRACTICE'],
+        self.media_data['introduction'].add_text(['FREESTYLE RAP IMPROV PRACTICE', 'USE ALL WORDS ON SCREEN'],
                                                  duration=call_to_action_duration, text_color=self.font_color,
-                                                 font_size=self.font_size, change_end=False)
-
-        self.media_data['introduction'].add_text(['USE ALL WORDS ON SCREEN'],
-                                                 duration=call_to_action_duration, text_color=self.font_color,
-                                                 font_size=self.font_size, change_end=False, start_time=call_to_action_duration + 0.5)
+                                                 font_size=self.font_size, change_end=False, consecutive_word_buffer=0.5)
 
         self.media_data['introduction'].add_text(['BEAT DROPS IN 3', 'BEAT DROPS IN 2', 'BEAT DROPS IN 1'],
                                                  duration=1, text_color=self.font_color, font_size=self.font_size,
@@ -140,7 +136,7 @@ class AVBuilder (Thread):
 
         self.media_data['background'].add_text(self.word_list, duration=self.word_visibility_duration,
                                                  text_color=self.font_color, font_size=self.font_size,
-                                                 start_time=start_time)
+                                                 start_time=start_time, consecutive_word_buffer=0.5)
 
     def build(self):
 

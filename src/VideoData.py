@@ -82,7 +82,7 @@ class VideoData:
         return self.clip
 
     def add_text(self, text_list, position="center", duration=10, text_color="white", start_time=0, font_size=12,
-                 change_end=True):
+                 change_end=True, consecutive_word_buffer=0):
 
         if self.clip is None:
             print('[WARNING] clip not read.')
@@ -91,7 +91,7 @@ class VideoData:
 
         for word in text_list:
 
-            word_duration = duration
+            word_duration = duration - consecutive_word_buffer
 
             if change_end and word == text_list[-1]:
 
