@@ -108,11 +108,15 @@ class AVBuilder (Thread):
 
         self.media_data['introduction'].loop(loop_duration)
 
-        call_to_action_duration = (loop_duration - 3) / 2
+        call_to_action_duration = ((loop_duration - 3) / 2) - 0.5
 
-        self.media_data['introduction'].add_text(['FREESTYLE RAP IMPROV PRACTICE', 'USE ALL WORDS ON SCREEN'],
+        self.media_data['introduction'].add_text(['FREESTYLE RAP IMPROV PRACTICE'],
                                                  duration=call_to_action_duration, text_color=self.font_color,
                                                  font_size=self.font_size, change_end=False)
+
+        self.media_data['introduction'].add_text(['USE ALL WORDS ON SCREEN'],
+                                                 duration=call_to_action_duration, text_color=self.font_color,
+                                                 font_size=self.font_size, change_end=False, start_time=call_to_action_duration + 0.5)
 
         self.media_data['introduction'].add_text(['BEAT DROPS IN 3', 'BEAT DROPS IN 2', 'BEAT DROPS IN 1'],
                                                  duration=1, text_color=self.font_color, font_size=self.font_size,
