@@ -81,8 +81,8 @@ class VideoData:
 
         return self.clip
 
-    def add_text(self, text_list, position="center", duration=10, text_color="white", start_time=0, font_size=12,
-                 change_end=True, consecutive_word_buffer=0):
+    def add_text(self, text_list, position="center", duration=10, text_color="white", stroke_width=2.5, stroke_color='white',
+                 font='Arial', method='caption', start_time=0, font_size=12, change_end=True, consecutive_word_buffer=0):
 
         if self.clip is None:
             print('[WARNING] clip not read.')
@@ -97,8 +97,8 @@ class VideoData:
 
                 word_duration = self.clip.duration - start_time
 
-            clips_list.append(TextClip(word.upper(), fontsize=font_size, font='DejaVu-Sans',
-                                       color=text_color, method='caption', stroke_width=10)
+            clips_list.append(TextClip(word.upper(), fontsize=font_size, font=font, color=text_color, method=method,
+                                       stroke_width=stroke_width, stroke_color=stroke_color)
                               .set_position(position)
                               .set_duration(word_duration)
                               .set_start('00:%02d:%02d.%05d' % (int(start_time/60.0), int((start_time % 60.0)/1),
@@ -115,7 +115,7 @@ class VideoData:
             print('[VideoData ERROR] No clip available.')
             return
 
-        self.clip.write_videofile(self.file_path, fps=30, threads=8, codec='libx264',  bitrate='500000k', verbose=False,
+        self.clip.write_videofile(self.file_path, fps=30, threads=8, codec='mpeg4',  bitrate='50000000k', verbose=False,
                                   logger=None)
 
     def close(self):
