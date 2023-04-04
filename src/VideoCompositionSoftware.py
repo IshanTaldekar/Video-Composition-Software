@@ -619,6 +619,19 @@ class MainWindow(QDialog):
         self.use_phone_aspect_ratio_flag = is_checked
         self.config['use-phone-aspect-ratio'] = is_checked
 
+        if self.use_phone_aspect_ratio_flag:
+
+            self.font_size = 100
+
+        else:
+
+            self.font_size = 150
+
+        self.FontSizeHorizontalSlider.setValue(self.font_size)
+        self.FontSizeLineEdit.setText(self.font_size)
+
+        self.config['font-size'] = self.font_size
+
         self.set_load_and_run_button_status()
 
     def update_generate_introduction_status(self, is_checked):
