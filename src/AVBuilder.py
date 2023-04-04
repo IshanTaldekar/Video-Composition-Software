@@ -41,7 +41,7 @@ class AVBuilder (Thread):
         self.output_clip = VideoData()
         self.word_list = []
 
-        self.font_color = 'white'
+        self.font_color = 'DarkGoldenrod'
         self.word_visibility_duration = 10
         self.font_size = 90
 
