@@ -621,14 +621,14 @@ class MainWindow(QDialog):
 
         if self.use_phone_aspect_ratio_flag:
 
-            self.font_size = 100
+            self.font_size = 100.0
 
         else:
 
-            self.font_size = 150
+            self.font_size = 150.0
 
         self.FontSizeHorizontalSlider.setValue(self.font_size)
-        self.FontSizeLineEdit.setText(self.font_size)
+        self.FontSizeLineEdit.setText(str(self.font_size))
 
         self.config['font-size'] = self.font_size
 
