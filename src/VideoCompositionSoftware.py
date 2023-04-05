@@ -625,7 +625,7 @@ class MainWindow(QDialog):
 
         else:
 
-            self.font_size = 150.0
+            self.font_size = 200.0
 
         self.FontSizeHorizontalSlider.setValue(self.font_size)
         self.FontSizeLineEdit.setText(str(self.font_size))
