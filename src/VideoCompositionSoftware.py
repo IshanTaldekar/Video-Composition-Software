@@ -627,7 +627,7 @@ class MainWindow(QDialog):
 
             self.font_size = 200.0
 
-        self.FontSizeHorizontalSlider.setValue(self.font_size)
+        self.FontSizeHorizontalSlider.setValue(int(self.font_size))
         self.FontSizeLineEdit.setText(str(self.font_size))
 
         self.config['font-size'] = self.font_size
